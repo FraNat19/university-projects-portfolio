@@ -15,7 +15,7 @@ Here I’ve collected all the materials and projects developed during my univers
   [→ Go to folder](sql-hospital/)
 
 - **Multi-Criteria Decision Analysis (2023)** – Optimization with *CPLEX* and ε-constraint method, generating Pareto frontiers and KPIs via a Balanced Scorecard framework.  
-  [→ Go to folder](decision-analysiss/)
+  [→ Go to folder](decision-analysis/)
 
 - **Algorithms Course Project (2023)** – Implementation of graph data structures and shortest-path algorithms in *Python*.  
   [→ Go to folder](algorithms/)
