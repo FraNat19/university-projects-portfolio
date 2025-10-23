@@ -9,24 +9,24 @@ Here I’ve collected all the materials and projects developed during my univers
   [→ Go to folder](llm-compliance-agent/)
 
 - **Spatial Predictive Modeling – Shrimp Biomass (2024)** – Spatial mixed-effect and Bayesian kriging models in *R* on 6,000+ survey data points (MEDITS).  
-  [→ Go to folder](2024-spatial-modeling/)
+  [→ Go to folder](spatial-modeling/)
 
 - **SQL Database Design – Hospital Cardiology Department (2023)** – Normalized *MySQL* database for managing patient data, interventions, and diagnostics.  
-  [→ Go to folder](2023-sql-hospital/)
+  [→ Go to folder](sql-hospital/)
 
 - **Multi-Criteria Decision Analysis (2023)** – Optimization with *CPLEX* and ε-constraint method, generating Pareto frontiers and KPIs via a Balanced Scorecard framework.  
-  [→ Go to folder](2023-decision-analysis/)
+  [→ Go to folder](decision-analysiss/)
 
 - **Algorithms Course Project (2023)** – Implementation of graph data structures and shortest-path algorithms in *Python*.  
-  [→ Go to folder](2023-algorithms/)
+  [→ Go to folder](algorithms/)
 
-- **Machine Learning Project (2024)** – Predictive modeling with *TensorFlow*, including hyperparameter tuning and model evaluation.  
-  [→ Go to folder](2024-machine-learning/)
+- **Machine Learning Project (2024)** – Predictive modeling with *TensorFlow*, including hyperparameter tuning and model evaluation and CNN.  
+  [→ Go to folder](machine-learning/)
 
 ## 📚 Additional Work
-- Convolutional Neural Network for image classification (89% accuracy).  
-- Adaptive Web Sampling for real population studies.  
-- Crime Index model for 2,000+ U.S. cities using factor and cluster analysis.
+- Analysis of Intertemporal Discount Rates using Bank of Italy SHIW Data. [→ Go to folder](empirical-economics-SHIW-data/)  
+- Adaptive Web Sampling for real population studies. [→ Go to folder](adaptive-web-sampling/)  
+- Crime Index model for 2,000+ U.S. cities using factor and cluster analysis. [→ Go to folder](advanced-data-analysis/)  
 
 ## 🗂️ How to Navigate
 - Projects are organized by **year** and **course**.  
