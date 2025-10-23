@@ -8,19 +8,19 @@ Here I’ve collected all the materials and projects developed during my univers
 - **LLM Agent for Compliance Workplace Safety (2025)** – End-to-end **RAG system** for INAIL, processing 3,200+ regulatory documents using *Python*, *Docling*, and *vector databases*.  
   [→ Go to folder](llm-compliance-agent/)
 
-- **Spatial Predictive Modeling – Shrimp Biomass (2024)** – Spatial mixed-effect and Bayesian kriging models in *R* on 6,000+ survey data points (MEDITS).  
+- **Spatial Predictive Modeling – Shrimp Biomass (2024/25)** – Spatial mixed-effect and Bayesian kriging models in *R* on 6,000+ survey data points (MEDITS).  
   [→ Go to folder](spatial-modeling/)
 
-- **SQL Database Design – Hospital Cardiology Department (2023)** – Normalized *MySQL* database for managing patient data, interventions, and diagnostics.  
+- **SQL Database Design – Hospital Cardiology Department (2024/25)** – Normalized *MySQL* database for managing patient data, interventions, and diagnostics.  
   [→ Go to folder](sql-hospital/)
 
-- **Multi-Criteria Decision Analysis (2023)** – Optimization with *CPLEX* and ε-constraint method, generating Pareto frontiers and KPIs via a Balanced Scorecard framework.  
+- **Multi-Criteria Decision Analysis (2024/25)** – Optimization with *CPLEX* and ε-constraint method, generating Pareto frontiers and KPIs via a Balanced Scorecard framework.  
   [→ Go to folder](decision-analysis/)
 
-- **Algorithms Course Project (2023)** – Implementation of graph data structures and shortest-path algorithms in *Python*.  
+- **Algorithms Course Project (2024/25)** – Implementation of graph data structures and shortest-path algorithms in *Python*.  
   [→ Go to folder](algorithms/)
 
-- **Machine Learning Project (2024)** – Predictive modeling with *TensorFlow*, including hyperparameter tuning and model evaluation and CNN.  
+- **Machine Learning Project (2023/24)** – Predictive modeling with *TensorFlow*, including hyperparameter tuning and model evaluation and CNN.  
   [→ Go to folder](machine-learning/)
 
 ## 📚 Additional Work
