@@ -37,5 +37,4 @@ Here I’ve collected all the materials and projects developed during my univers
 
 ## 📬 Contact
 For more details or collaboration inquiries: franknatali01@gmail.com
-**[your.email@example.com]**
 
