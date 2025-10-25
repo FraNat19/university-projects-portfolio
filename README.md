@@ -24,6 +24,7 @@ Here I’ve collected all the materials and projects developed during my univers
   [→ Go to folder](sql-hospital/)
 
 ## 📚 Additional Work
+- Built a composite index using the AMPI method designed to evaluate the competitiveness of Serie A teams over the last decade. It aggregates four sub-indices (historical, defensive, offensive, and market) [→ Go to folder](composite-index-serie-a/)
 - Analysis of Intertemporal Discount Rates using Bank of Italy SHIW Data. [→ Go to folder](empirical-economics-SHIW-data/)  
 - Adaptive Web Sampling for real population studies. [→ Go to folder](adaptive-web-sampling/)  
 - Crime Index model for 2,000+ U.S. cities using factor and cluster analysis. [→ Go to folder](advanced-data-analysis/)  
