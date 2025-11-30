@@ -25,6 +25,8 @@ Here I’ve collected all the materials and projects developed during my univers
 
 - **ECB Data Automation Pipeline (2025)** – End-to-end **automated data pipeline** using *Power BI*, *Power Automate*, and *SharePoint*, processing ECB economic data with email notifications. → [Go to folder](ECB-Data-Automation-Pipeline/)
 
+-  **Country Economic Dashboard Automation (2025)** – End-to-end **automated data pipeline** using *Power BI*, *Power Automate*, and *SharePoint*. Generates country-specific economic dashboards from World Bank data with automated tracking and email notifications. → [Go to folder](Country-Economic-Dashboard-Automation/)
+
 ## 📚 Additional Work
 - Built a composite index using the AMPI method designed to evaluate the competitiveness of Serie A teams over the last decade. It aggregates four sub-indices (historical, defensive, offensive, and market) [→ Go to folder](composite-index-serie-a/)
 - Analysis of Intertemporal Discount Rates using Bank of Italy SHIW Data. [→ Go to folder](empirical-economics-SHIW-data/)  
