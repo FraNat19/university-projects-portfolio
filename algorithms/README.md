@@ -1,8 +1,15 @@
 # Graph Algorithms: Routing Optimization & Social Network Analysis
 
-> Personal project extending the Algorithms & Data Structures course | Sapienza University of Rome
+<p align="center">
+  <img src="https://img.shields.io/badge/Language-Python-blue?style=for-the-badge&logo=P" alt="Python">
+  <img src="https://img.shields.io/badge/Course-Algorithms%20%26%20Data%20Structures-red?style=for-the-badge" alt="Course">
+  <img src="https://img.shields.io/badge/University-Sapienza-darkred?style=for-the-badge" alt="Sapienza">
+  <img src="https://img.shields.io/badge/Year-2024%2F2025-green?style=for-the-badge" alt="Year">
+</p>
 
-This repository contains two independent projects implementing classic graph algorithms on real-world open-source datasets. The goal was to go beyond theoretical concepts and apply them to practical problems: GPS routing and social network analysis.
+**Personal project extending the Algorithms & Data Structures course | Sapienza University of Rome**
+
+This repository contains two independent projects implementing classic graph algorithms on real-world open-source datasets. The goal is to go beyond theoretical concepts and apply them to practical problems: GPS routing and social network analysis.
 
 ---
 
