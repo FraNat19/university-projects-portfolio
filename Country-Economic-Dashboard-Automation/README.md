@@ -1,20 +1,20 @@
-# 📊 Country Economic Dashboard Automation
+# Country Economic Dashboard Automation
 
 **Fully automated pipeline for country-specific economic analysis with Power BI, Power Automate, and SharePoint**
 
-## 🎯 What This Project Does
+##  What This Project Does
 
 Built an **end-to-end automated system** that:
 
-1. ✅ Detects when a country CSV file is uploaded to SharePoint (e.g., `Italy_Economy.csv`)
-2. ✅ Extracts the country name from the filename
-3. ✅ Creates a tracking record in SharePoint list
-4. ✅ Sends email notification with personalized dashboard link
-5. ✅ Dashboard opens **automatically filtered** for that country
+1. Detects when a country CSV file is uploaded to SharePoint (e.g., `Italy_Economy.csv`)
+2. Extracts the country name from the filename
+3. Creates a tracking record in SharePoint list
+4. Sends email notification with personalized dashboard link
+5. Dashboard opens **automatically filtered** for that country
 
 **Result:** Upload file → 10 seconds → Receive email with ready-to-view dashboard
 
-## 🏗️ Architecture
+## Architecture
 
 Upload "Italy_Economy.csv"
 ↓
@@ -35,7 +35,7 @@ Dashboard shows ONLY Italy data (2000-2024)
 - **World Bank Data** - 6 countries, 25 years, 5 economic indicators
 
 
-## 📊 Dashboard Features
+## Dashboard Features
 
 **Data:** 150 records (6 countries × 25 years)
 
@@ -46,7 +46,7 @@ Dashboard shows ONLY Italy data (2000-2024)
 - 📋 Detailed data table
 - 🌍 Country filter (Italy, Germany, France, Spain, UK, USA)
 
-## 🔄 Automation Workflow
+## Automation Workflow
 
 ### Trigger:
 File uploaded to SharePoint Documents
@@ -57,7 +57,7 @@ File uploaded to SharePoint Documents
 3. **Send email** with dashboard link filtered by country: dashboard_url?filter=All_Countries_Economy/Country eq 'Italy'
 4. **Update status** Email_Sent = Yes
 
-## 📊 Data Source
+## Data Source
 
 **World Bank - World Development Indicators**
 - 6 countries: Italy, Germany, France, Spain, UK, USA
