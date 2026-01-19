@@ -27,11 +27,16 @@ Here I’ve collected all the materials and projects developed during my univers
 
 -  **Country Economic Dashboard Automation (2025)** – End-to-end **automated data pipeline** using *Power BI*, *Power Automate*, and *SharePoint*. Generates country-specific economic dashboards from World Bank data with automated tracking and email notifications. → [Go to folder](Country-Economic-Dashboard-Automation/)
 
+- **Bachelor Thesis – Approximate Confidence Intervals for the Binomial Model (2023)** – Study and proposal of improved approximate confidence intervals for binomial \(p\), with simulations in *R* and full thesis written in *LaTeX*.  → [Go to folder](Bachelor-thesis/)
+ 
+  **Statistical Multivariate Analysis with SAS (BSc)** – PCA/factor-style modelling, clustering, and regression case studies (countries, students, products, agriculture) implemented in *SAS*.  → [Go to folder](stat-mult/)
+  
 ## 📚 Additional Work
 - Built a composite index using the AMPI method designed to evaluate the competitiveness of Serie A teams over the last decade. It aggregates four sub-indices (historical, defensive, offensive, and market) [→ Go to folder](composite-index-serie-a/)
 - Analysis of Intertemporal Discount Rates using Bank of Italy SHIW Data. [→ Go to folder](empirical-economics-SHIW-data/)  
 - Adaptive Web Sampling for real population studies. [→ Go to folder](adaptive-web-sampling/)  
-- Crime Index model for 2,000+ U.S. cities using factor and cluster analysis. [→ Go to folder](advanced-data-analysis/)  
+- Crime Index model for 2,000+ U.S. cities using factor and cluster analysis. [→ Go to folder](advanced-data-analysis/)
+-  Multiple Time Series Modelling, VAR stability & IRFs, spurious regressions, unit roots and cointegration. [→ Go to folder](multiple-time-series/)
 
 ## 🗂️ How to Navigate
 - Projects are organized by **year** and **course**.  
