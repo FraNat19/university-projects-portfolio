@@ -5,7 +5,7 @@ Here I’ve collected all the materials and projects developed during my univers
 
 ## 🚀 Main Projects
 
-- **LLM Agent for Compliance Workplace Safety (2025)** – End-to-end **RAG system** for INAIL, processing 3,200+ regulatory documents using *Python*, *Docling*, and *vector databases*.  
+- **LLM Agent for Compliance Workplace Safety (2025)** – End to end **graphRAG system** for workplace safety, processing 200+ regulatory documents using *Python*, *Docling*, with *vector databases* storage and multi-layer normative **knowledge graph**.  
   [→ Go to folder](llm-compliance-agent/)
 
 - **Spatial Predictive Modeling – Shrimp Biomass (2024/25)** – Spatial mixed-effect and Bayesian kriging models in *R* on 6,000+ survey data points (MEDITS).  
