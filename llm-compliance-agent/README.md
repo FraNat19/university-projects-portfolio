@@ -140,7 +140,9 @@ Evaluated on 14 benchmark queries covering fire prevention, asbestos, carcinogen
 | Infrastructure | HPC cluster (NVIDIA A100) |
 
 
-## 📊 Data Sources
+## 📊 Data Sources 
+
+[Codici](https://drive.google.com/drive/folders/19tM4tLhgXn2o-Vbchh5rFToaOQnDDo1x?usp=sharing)
 
 | Source | Type | Volume |
 |--------|------|--------|
