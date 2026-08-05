@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 5 — Bayesian kriging of shrimp biomass
-Bayesian kriging (krige.bayes) with credibility intervals; comparison with the ML kriging of Homework 4.
+# Bayesian kriging (krige.bayes) with credibility intervals; comparison with the ML kriging of Homework 4.
 
 # Using shrimps data, prepare an R script (and results' workspace) that:
 

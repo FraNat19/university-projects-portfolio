@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 2 — Exploratory analysis of shrimp biomass and environmental descriptors
-EDA, correlations and multivariate analysis on the shrimp data (years 2002 and 2008).
+# EDA, correlations and multivariate analysis on the shrimp data (years 2002 and 2008).
 
 # HOMEWORK 2 - GROUP 12 (Agate, Bartocci, Natali)
 

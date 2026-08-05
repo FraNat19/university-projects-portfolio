@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 9 — Extreme value theory on rainfall
-Block-maxima approach and Generalized Extreme Value (GEV) modelling of yearly rainfall maxima.
+# Block-maxima approach and Generalized Extreme Value (GEV) modelling of yearly rainfall maxima.
 
 # Import necessary libraries
 library(dplyr)

@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 3 — Variogram modelling on the wolfcamp data
-Trend, stationarity and empirical/theoretical variogram fitting with geoR.
+# Trend, stationarity and empirical/theoretical variogram fitting with geoR.
 
 # Using wolfcamp data, prepare a script developing the following tasks:
 

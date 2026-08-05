@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 8 — Spatial species distribution modelling (mite data)
-Presence-absence modelling of species with spatial predictors; evaluation with ROC/AUC.
+# Presence-absence modelling of species with spatial predictors; evaluation with ROC/AUC.
 
 # We first install and import the required libraries
 library(vegan)

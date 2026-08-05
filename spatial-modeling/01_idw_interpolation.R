@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 1 — Inverse Distance Weighting (IDW) interpolation
-Choosing the smoothing parameter p by spatial cross-validation (RMSE), using gstat/sp.
+# Choosing the smoothing parameter p by spatial cross-validation (RMSE), using gstat/sp.
 
 # PART A ------------------------------------------------------------------
 

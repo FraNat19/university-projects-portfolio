@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 4 — Kriging estimation of total biomass on the prediction grid
-Maximum-likelihood kriging with trend and covariates; prediction maps.
+# Maximum-likelihood kriging with trend and covariates; prediction maps.
 
 # Part a - Year 2002 ------------------------------------------------------
 

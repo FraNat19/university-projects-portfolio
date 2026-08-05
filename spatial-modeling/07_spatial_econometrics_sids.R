@@ -3,7 +3,7 @@
 # Group 12 — Agate, Bartocci, Natali
 #
 # Homework 7 — Areal spatial analysis (SIDS, North Carolina)
-Spatial weights, spatial autocorrelation and spatial regression on areal data with spdep/spatialreg.
+# Spatial weights, spatial autocorrelation and spatial regression on areal data with spdep/spatialreg.
 
 # We first install and load the necessary libraries
 # install.packages(c("spData", "sf", "spdep", "spatialreg", "tigris", "ggplot2"))
