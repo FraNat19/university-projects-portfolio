@@ -1,167 +1,75 @@
-# 🦐 Spatial Statistics Analysis of Mediterranean Shrimp Biomass
+# Spatial Statistics: Kriging Models for Mediterranean Shrimp Biomass
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Language-R-blue?style=for-the-badge&logo=r" alt="R">
-  <img src="https://img.shields.io/badge/Course-Spatial%20Statistics-red?style=for-the-badge" alt="Course">
-  <img src="https://img.shields.io/badge/University-Sapienza-darkred?style=for-the-badge" alt="Sapienza">
-  <img src="https://img.shields.io/badge/Year-2024%2F2025-green?style=for-the-badge" alt="Year">
-</p>
+![R](https://img.shields.io/badge/R-geoR%20%7C%20gstat%20%7C%20spdep-blue)
+![Course](https://img.shields.io/badge/Sapienza-Spatial%20Statistics%202024%2F25-8b1a1a)
 
-<p align="center">
-  <b>A Statistical Framework for Understanding Parapenaeus longirostris:<br>Bayesian and Maximum Likelihood Applications</b>
-</p>
+Semester project for **Spatial Statistics and Statistical Tools for Environmental Data**, MSc in Statistical Methods and Applications, Sapienza University of Rome.
 
----
+The central work predicts deep-water rose shrimp (*Parapenaeus longirostris*) biomass across the Italian Tyrrhenian coast from 120 trawl survey stations, comparing maximum-likelihood kriging against Bayesian kriging. Four further assignments apply the same geostatistical toolkit to other datasets.
 
-## 📋 Overview
+`Spatial_Presentation.pdf` is the final deliverable and carries the maps, priors, and comparison tables discussed below.
 
-This repository contains the complete work developed during the **Spatial Statistics and Statistical Tools for Environmental Data** course at Sapienza University of Rome (A.Y. 2024/2025). The project spans an entire semester of weekly assignments, focusing on the spatial analysis of **deep-water rose shrimp (*Parapenaeus longirostris*)** biomass along the Italian Tyrrhenian coast.
+## What is in this folder
 
----
+The eight scripts are weekly assignments. Four use the MEDITS shrimp data, four use other datasets that the course provided for specific techniques.
 
-## Project Objectives
+| Script | Dataset | What it does |
+|---|---|---|
+| `01_idw_interpolation.R` | Wolfcamp aquifer | Inverse distance weighting; picks the exponent *p* by spatial cross-validation |
+| `02_exploratory_analysis_biomass.R` | MEDITS shrimp | EDA, correlation structure, PCA to select covariates |
+| `03_variogram_modelling.R` | Wolfcamp aquifer | Trend removal, stationarity checks, empirical and fitted variograms |
+| `04_kriging_biomass_estimation.R` | MEDITS shrimp | ML kriging with covariates; prediction maps and 95% confidence bounds |
+| `05_bayesian_kriging.R` | MEDITS shrimp | Bayesian kriging via `krige.bayes`; credible intervals; comparison with script 04 |
+| `07_spatial_econometrics_sids.R` | SIDS, North Carolina | Areal data: spatial weights, Moran's I, spatial regression |
+| `08_spatial_species_distribution.R` | Mite data | Presence-absence modelling with spatial predictors, evaluated by ROC/AUC |
+| `09_extreme_value_theory_rainfall.R` | Yearly rainfall | Block maxima and GEV fitting |
 
-The main goals of this project were to:
+`shrimp2002.csv` and `shrimp2008.csv` hold the 120 stations for each survey year. `ML.RData` and `Bayesian.rdata` hold the fitted kriging objects, and the four `*_Kriging_*.pdf` files are the prediction maps they produce.
 
-1. **Explore spatial patterns** in Mediterranean shrimp biomass distribution
-2. **Apply geostatistical methods** for spatial prediction and interpolation
-3. **Compare frequentist and Bayesian approaches** to kriging
-4. **Quantify uncertainty** in spatial predictions through confidence/credible intervals
-5. **Investigate environmental drivers** affecting shrimp distribution (temperature, salinity, bathymetry)
+## The shrimp problem
 
----
+MEDITS (Mediterranean International Trawl Survey) runs standardised trawls to monitor demersal species. Each survey year gives 120 sampled stations along the coast from Liguria to Lazio, with 29 variables per station: bathymetry, distance from coast, slope, and quarterly minima and maxima for temperature and salinity.
 
-## 📊 Dataset
+The response is total biomass in kg/km². Two things make it awkward:
 
-### MEDITS Survey
-The data comes from the **MEDITS (Mediterranean International Trawl Survey)** program, which conducts standardized trawl surveys across the Mediterranean Sea to monitor demersal species.
+- **Exactly half the stations record zero biomass**, 60 of 120 in both 2002 and 2008. The distribution is far from Gaussian.
+- **Spawners and recruits sum to total biomass**, so neither can serve as a covariate.
 
-| Feature | Description |
-|---------|-------------|
-| **Study Area** | Tyrrhenian Sea (Liguria to Lazio coast) |
-| **Years Analyzed** | 2002 and 2008 |
-| **Target Species** | *Parapenaeus longirostris* (deep-water rose shrimp) |
-| **Variables** | 29 including spatial, environmental, and biological data |
-| **Response Variable** | Total biomass (kg/km²) |
+The response is modelled as `log(tot + 1)`, which keeps the zeros at zero and leaves the non-zero values roughly symmetric. Covariates are selected from the loadings of the first two principal components: salinity, bathymetry, distance from coast, slope, and quarterly temperature, with the specific quarters differing between 2002 and 2008.
 
-### Key Covariates
-- **Spatial**: Bathymetry, distance from coast, slope
-- **Environmental**: Temperature (seasonal quartiles), Salinity (seasonal quartiles)
-- **Biological**: Spawners (adults), Recruits (juveniles)
+## Model
 
----
-
-## 🔬 Methodology
-
-### 1. Exploratory Data Analysis
-- Principal Component Analysis (PCA) for covariate selection
-- Correlation analysis and multivariate exploration
-- Log-transformation of biomass data to handle zero-inflation and skewness
-
-### 2. Variogram Modeling
-- Empirical variogram estimation
-- Model fitting: **Matérn**, **Exponential**, **Spherical**
-- Model selection via cross-validation (RMSE)
-
-### 3. Spatial Interpolation
-
-#### Maximum Likelihood Kriging
-```r
-# Variogram model fitting
-fit_exponential <- likfit(geodata, cov.model = "exponential", 
-                          ini.cov.pars = c(sigma2, phi), nugget = tau2)
-
-# Kriging interpolation
-krig_result <- krige.conv(geodata, locations = grid, krige = krige.control(...))
-```
-
-#### Bayesian Kriging
-```r
-# Prior specification
-prior <- list(
-  beta.prior = "normal",
-  sigmasq.prior = "reciprocal",
-  phi.prior = "uniform",
-  tausq.rel.prior = "uniform"
-)
-
-# Bayesian kriging
-krige_bayes <- krige.bayes(geodata, locations = grid, prior = prior, model = model)
-```
-
-### 4. Uncertainty Quantification
-- **Frequentist**: 95% Confidence Intervals
-- **Bayesian**: 95% Credible Intervals from posterior distributions
-- Interval Score comparison for model evaluation
-
----
-
-## Key Results
-
-### Biomass Distribution Patterns
-
-| Region | 2002 | 2008 |
-|--------|------|------|
-| **Liguria (North)** | Low biomass | Low biomass |
-| **Tuscany (Central)** | Medium-High | Medium-High |
-| **Lazio (South)** | High | Very High |
-
-### Model Performance Comparison
-
-| Metric | MLE Kriging | Bayesian Kriging |
-|--------|-------------|------------------|
-| **RMSE 2002** | 2.26 | **2.08** ✓ |
-| **RMSE 2008** | 2.38 | **2.15** ✓ |
-| **Interval Score 2002** | 9.73 | **8.38** ✓ |
-| **Interval Score 2008** | 9.71 | 9.95 |
-
-> **Conclusion**: The Bayesian approach consistently outperforms MLE in terms of RMSE, demonstrating its ability to incorporate prior information and handle uncertainty more effectively.
-
-### Spatial Predictions
-
-<p align="center">
-  <i>Interpolated shrimp biomass shows highest concentrations in the central-southern Tyrrhenian (Tuscany-Lazio coast), with optimal conditions at 200-400m depth.</i>
-</p>
-
-
----
-
-## Key Concepts
-
-### Spatial Mixed Effect Model
-The spatial process is modeled as:
+The spatial process is a mixed-effect model:
 
 $$Z(s) = X(s)\beta + W(s) + \varepsilon(s)$$
 
-Where:
-- $X(s)\beta$ : Deterministic trend (fixed effects)
-- $W(s) \sim N_n(0, \sigma^2 H_{11}(\phi))$ : Spatial random effect
-- $\varepsilon(s) \sim N_n(0, \tau^2)$ : Measurement error (nugget)
+with $W(s) \sim N_n(0, \sigma^2 H_{11}(\phi))$ the spatially correlated effect and $\varepsilon(s) \sim N_n(0, \tau^2)$ the nugget.
 
-### Bayesian Framework
-Prior distribution:
-$$\pi(\beta, \omega) = \pi(\beta)\pi(\tau^2)\pi(\sigma^2, \phi)$$
+The ML route fits the variogram with `likfit` and predicts with `krige.conv`. The Bayesian route puts a flat normal prior on $\beta$, a reciprocal prior on $\sigma^2$, and a uniform prior on $\phi$ over a discretised range, then predicts with `krige.bayes`. Both are validated by repeated train-test splits.
 
-Posterior distribution obtained via MCMC sampling for prediction at unobserved locations.
+## Results
 
----
+Averages over 10 cross-validation repetitions:
 
-## About *Parapenaeus longirostris*
+| | ML kriging | Bayesian kriging |
+|---|---|---|
+| RMSE 2002 | 2.2617 | 2.0759 |
+| RMSE 2008 | 2.3812 | 2.1481 |
+| Interval score 2002 | 9.731 | 8.384 |
+| Interval score 2008 | 9.708 | 9.95 |
 
-| Characteristic | Description |
-|----------------|-------------|
-| **Common Name** | Deep-water rose shrimp |
-| **Habitat Depth** | 50-700m (optimal: 200-400m) |
-| **Temperature Range** | 12-16°C |
-| **Salinity Preference** | 35-39 PSU |
-| **Substrate** | Soft, muddy seabeds |
-| **Ecological Role** | Indicator species for climate change and overfishing |
+Bayesian kriging gives lower RMSE in both years, and a clearly better interval score in 2002. In 2008 the interval scores are effectively tied, with the ML approach marginally ahead. The gap is small enough that the two methods are close to interchangeable on this dataset, and the Bayesian fit costs considerably more computation. What the priors bought here was a modest gain in point accuracy, not a decisive one.
 
----
+Spatially, both approaches agree on where the shrimp are. Biomass concentrates along the Tuscany and Lazio coasts at 200-400 m depth, and stays low off Liguria, where the bathymetric gradient is steep. Between 2002 and 2008 the hotspots shift south-east, and 2008 shows a wider spread of high values. The two methods disagree most in 2008: ML spreads the peak toward the Lazio coast while the Bayesian fit keeps it concentrated in the central area.
 
-## 📖 References
+## Running it
 
-- **MEDITS Programme**: [www.sibm.it/MEDITS](https://www.sibm.it/SITO%20MEDITS/Medits%20programme.htm)
+Written for R with `geoR`, `gstat`, `sp`, `sf`, `spdep`, `spatialreg`, `vegan`, `extRemes`, and `ggplot2`.
+
+Scripts 02, 04, and 05 open `shrimpsfull.RData` (the full multi-year survey panel) and `AllGrids.RData` (the prediction grids), and script 09 opens `datiVE.RData`. Those three files are course data and are not redistributed here, so the shrimp scripts will not run end to end from a clone. The two CSVs cover the 2002 and 2008 stations, and `ML.RData` and `Bayesian.rdata` contain the fitted objects, which is enough to inspect the models and reproduce the maps without refitting. Scripts 01, 03, 07, and 08 run as they are: their datasets ship with `geoR`, `spData`, and `vegan`.
+
+## References
+
+- MEDITS Programme: [sibm.it](https://www.sibm.it/SITO%20MEDITS/Medits%20programme.htm)
 - Diggle, P.J. & Ribeiro Jr, P.J. (2007). *Model-based Geostatistics*. Springer.
 - Ribeiro Jr, P.J. & Diggle, P.J. (2001). geoR: A package for geostatistical analysis. *R-NEWS*, 1(2), 15-18.
-
