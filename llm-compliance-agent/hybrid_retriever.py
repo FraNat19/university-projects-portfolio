@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 🎯 HYBRID RETRIEVER - GraphRAG per Workplace Safety
@@ -26,7 +27,7 @@ class HybridRetriever:
         qdrant_port: int = 16333,  # ✅ Porta tunnel corretta
         neo4j_uri: str = "bolt://127.0.0.1:17687",  # ✅ Porta tunnel corretta
         neo4j_user: str = "neo4j",
-        neo4j_password: str = "thesis2024",
+        neo4j_password: str = os.getenv("NEO4J_PASSWORD", ""),
         model_name: str = "intfloat/multilingual-e5-large"
     ):
         print("🔧 Initializing Hybrid Retriever...")

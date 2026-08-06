@@ -54,7 +54,7 @@ echo "   PID: $QDRANT_PID"
 
 # ================== START NEO4J ==================
 echo "📊 Starting Neo4j..."
-export NEO4J_AUTH="neo4j/thesis2024"
+export NEO4J_AUTH="neo4j/${NEO4J_PASSWORD:?set NEO4J_PASSWORD before submitting}"
 export NEO4J_server_default__listen__address="0.0.0.0"
 export NEO4J_server_http_listen__address="0.0.0.0:7474"
 export NEO4J_server_bolt_listen__address="0.0.0.0:7687"
@@ -149,7 +149,7 @@ export QDRANT_HOST="127.0.0.1"
 export QDRANT_PORT="6333"
 export NEO4J_URI="bolt://127.0.0.1:7687"
 export NEO4J_USER="neo4j"
-export NEO4J_PASSWORD="thesis2024"
+export NEO4J_PASSWORD="${NEO4J_PASSWORD:?set NEO4J_PASSWORD before submitting}"
 export OLLAMA_URL="http://127.0.0.1:11434"
 
 echo "   QDRANT_PORT=$QDRANT_PORT"

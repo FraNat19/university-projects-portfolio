@@ -84,7 +84,7 @@ chmod 777 "${QDRANT_STORAGE}" || true
 
 
 
-export NEO4J_AUTH="neo4j/thesis2024"
+export NEO4J_AUTH="neo4j/${NEO4J_PASSWORD:?set NEO4J_PASSWORD before submitting}"
 
 export NEO4J_server_default__listen__address="0.0.0.0"
 

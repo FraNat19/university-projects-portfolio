@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 🔍 CHECK CONNECTIONS - Verifica Qdrant + Neo4j
@@ -39,7 +40,7 @@ def check_neo4j():
     try:
         driver = GraphDatabase.driver(
             "bolt://127.0.0.1:17687",
-            auth=("neo4j", "thesis2024")
+            auth=("neo4j", os.getenv("NEO4J_PASSWORD", ""))
         )
         
         with driver.session() as session:

@@ -33,7 +33,7 @@ except ImportError:
 
 NEO4J_URI = os.getenv("NEO4J_URI", "bolt://127.0.0.1:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
-NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "thesis2024")
+NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "")
 
 INAIL_ENRICHED = Path("/mnt/beegfs/proj/dss.dmaia/thesis_graph_rag/data/INAIL_enriched")
 OSHA_ENRICHED = Path("/mnt/beegfs/proj/dss.dmaia/thesis_graph_rag/data/OSHA_enriched")

@@ -290,7 +290,7 @@ class HybridRetrieverV5:
 
         neo4j_user: str = "neo4j",
 
-        neo4j_password: str = "thesis2024",
+        neo4j_password: str = os.getenv("NEO4J_PASSWORD", ""),
 
         model_name: str = "intfloat/multilingual-e5-large",
 

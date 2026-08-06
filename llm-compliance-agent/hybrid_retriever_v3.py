@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 🎯 HYBRID RETRIEVER v3 - GraphRAG per Workplace Safety
@@ -150,7 +151,7 @@ class HybridRetrieverV3:
         qdrant_port: int = None,  # Auto-detect: 6333 local, 16333 tunnel
         neo4j_uri: str = None,    # Auto-detect: 7687 local, 17687 tunnel
         neo4j_user: str = "neo4j",
-        neo4j_password: str = "thesis2024",
+        neo4j_password: str = os.getenv("NEO4J_PASSWORD", ""),
         model_name: str = "intfloat/multilingual-e5-large"
     ):
         import os

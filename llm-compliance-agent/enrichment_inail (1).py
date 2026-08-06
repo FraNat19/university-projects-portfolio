@@ -140,7 +140,7 @@ class Config:
     USE_LOCAL_HPC_MODEL = True
 
     # HuggingFace Token
-    HARDCODED_HF_TOKEN = "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"
+    HARDCODED_HF_TOKEN = ""  # set HUGGINGFACE_TOKEN in the environment
     HF_TOKEN_ENV = "HUGGINGFACE_TOKEN"
 
     # Threshold aumentati per maggiore precisione
@@ -1897,7 +1897,7 @@ if __name__ == "__main__":
     else:
         quick_test()
 
-MY_TOKEN = "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"
+MY_TOKEN = os.environ.get("HUGGINGFACE_TOKEN", "")
 
 """
 COLAB DEBUG EXTRACTOR - Da aggiungere al notebook esistente

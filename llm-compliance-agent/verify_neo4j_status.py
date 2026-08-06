@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 """
 Verifica stato completo Neo4j dopo i layer
@@ -6,7 +7,7 @@ from neo4j import GraphDatabase
 
 NEO4J_URI = "bolt://127.0.0.1:7687"
 NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "thesis2024"
+NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "")
 
 def main():
     d = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))

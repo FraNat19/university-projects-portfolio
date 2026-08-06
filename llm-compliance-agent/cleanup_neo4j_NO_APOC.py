@@ -1,3 +1,4 @@
+import os
 #!/usr/bin/env python3
 
 """
@@ -26,7 +27,7 @@ from datetime import datetime
 
 NEO4J_URI = "bolt://127.0.0.1:7687"
 
-NEO4J_AUTH = ("neo4j", "thesis2024")
+NEO4J_AUTH = ("neo4j", os.getenv("NEO4J_PASSWORD", ""))
 
 
 
