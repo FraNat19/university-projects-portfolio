@@ -1,438 +1,217 @@
-# Database Project: Cardiology Ward Management System
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Tools-MySQL%20Workbench%20%7C%20Python-green?style=for-the-badge" alt="Tools">
-  <img src="https://img.shields.io/badge/Focus-ER%20Model%20%7C%20SQL%20%7C%20Implementation-blue?style=for-the-badge" alt="Focus">
-  <img src="https://img.shields.io/badge/University-Sapienza-darkred?style=for-the-badge" alt="Sapienza">
-  <img src="https://img.shields.io/badge/Year-2021%2F2022-orange?style=for-the-badge" alt="Year">
-</p>
+# 🫀 Cardiology Ward Database
 
-<p align="center">
-  <b>From requirements elicitation to MySQL implementation: Cardiology Ward Database</b>
-</p>
+**From a bedside interview to a normalised MySQL schema**
 
----
+<img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+<img src="https://img.shields.io/badge/3NF-normalised-1a7f37?style=for-the-badge" alt="3NF">
+<img src="https://img.shields.io/badge/Sapienza-8b1a1a?style=for-the-badge" alt="Sapienza">
 
-## Overview
+<sub>Database Systems · BSc · Sapienza University of Rome · January 2022</sub>
 
-This repository contains a group project for the **Database Systems** course during my Bachelor's degree. The project involved designing and implementing a realistic database covering the full lifecycle: from requirements gathering to physical implementation and testing.
-
-**Modeled domain:** clinical and administrative workflow of a **Cardiology Ward**.
-
-```
-Paziente → Sintomo → Visita/Esami → Diagnosi → Cura → Referti/Archivio
-```
-
----
-
-## Project Goals
-
-| Phase | Description |
-|-------|-------------|
-| **Requirements Gathering** | Structured interviews with a cardiology resident (Policlinico Gemelli) |
-| **Design** | Conceptual ER model → Logical relational schema → Physical MySQL implementation |
-| **Validation** | Test data, representative SQL queries, Python interface for interaction |
-
----
-
-## Design & Implementation
-
-### Domain Analysis
-
-The modeled clinical workflow covers the full patient path:
-
-```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│ TRIAGE  │ → │ PRESA   │ → │ANAMNESI │ → │  ESAMI  │ → │DIAGNOSI │
-│         │    │IN CARICO│    │         │    │ (ECG,..)│    │         │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
-                                                                  ↓
-┌─────────┐    ┌─────────┐    ┌─────────┐                  ┌─────────┐
-│ARCHIVIO │ ← │ REFERTO │ ← │FOLLOW-UP│ ←──────────────── │ TERAPIA │
-│         │    │         │    │         │                  │         │
-└─────────┘    └─────────┘    └─────────┘                  └─────────┘
-```
-
-
-### ER Model (Conceptual)
-
-**Main Entities:**
-
-| Entity | Description | Key Attributes |
-|--------|-------------|----------------|
-| `PATIENT` | Patient demographic info | ID, FirstName, LastName, BirthDate |
-| `DOCTOR` | Medical staff | StaffID, Specialty |
-| `VISIT` | Clinical encounter | ID, Date, Time, Type |
-| `EXAM` | Diagnostic test | ID, Type (ECG, Echo, etc.), Result |
-| `DIAGNOSIS` | Identified condition | ID, ICD Code, Description |
-| `TREATMENT` | Therapy plan | ID, Type (Medication/Procedure) |
-| `MEDICATION` | Prescribed drugs | ATC Code, Name, Dosage |
-| `REPORT` | Clinical document | ID, Date, Content |
-
-**Relationships:**
-
-```
-PAZIENTE ──(1,N)── VISITA ──(N,1)── MEDICO
-    │                 │
-    │                 ├──(1,N)── ESAME
-    │                 │
-    └──(1,N)── DIAGNOSI ──(1,N)── TERAPIA ──(N,M)── MEDICINALE
-```
-
-
----
-
-### Estimated Volumes & Operations
-
-**Annual Volumes:**
-
-| Entity/Relation | Estimated Volume |
-|-----------------|-----------------|
-| Patient | 5,000 |
-| Visit | 15,000 |
-| Exam | 30,000 |
-| Diagnosis | 8,000 |
-| Report | 20,000 |
-| Doctor | 50 |
-
-**Operations Table:**
-
-| Operation | Type | Frequency |
-|-----------|------|-----------|
-| Add new visit | Interactive | 50/day |
-| Retrieve patient history | Interactive | 100/day |
-| Monthly diagnosis report | Batch | 1/month |
-| Report archive backup | Batch | 1/week |
-
----
-
-### Physical Implementation
-
-**Database:** MySQL  
-
-```sql
--- Example: create PATIENT table
-CREATE TABLE Patient (
-    ID VARCHAR(16) PRIMARY KEY,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50) NOT NULL,
-    BirthDate DATE NOT NULL,
-    Gender ENUM('M', 'F') NOT NULL,
-    Phone VARCHAR(15),
-    Email VARCHAR(100),
-    Address VARCHAR(200)
-);
-
--- Example Foreign Key
-ALTER TABLE Visit
-ADD CONSTRAINT fk_visit_patient
-FOREIGN KEY (PatientID) REFERENCES Patient(ID)
-ON DELETE RESTRICT ON UPDATE CASCADE;
-
-**Indexes:**
-# 🗄️ Database Project (Real-World DB)
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Tools-MySQL%20Workbench%20%7C%20Python-green?style=for-the-badge" alt="Tools">
-  <img src="https://img.shields.io/badge/Focus-ER%20Model%20%7C%20SQL%20%7C%20Implementation-blue?style=for-the-badge" alt="Focus">
-  <img src="https://img.shields.io/badge/University-Sapienza-darkred?style=for-the-badge" alt="Sapienza">
-  <img src="https://img.shields.io/badge/Year-2021%2F2022-orange?style=for-the-badge" alt="Year">
-</p>
-
-<p align="center">
-  <b>From requirements elicitation to MySQL implementation: Cardiology ward database</b>
-</p>
+</div>
 
 ---
 
 ## 📋 Overview
 
-Repository for the **Database** exam project, developed as a group assignment: building a "real-world" database following the complete lifecycle, from requirements gathering to implementation and testing.
+The requirements for this database did not come from a specification sheet. They came from a structured interview with **Claudio, a cardiology resident at Policlinico Universitario Agostino Gemelli**, who was asked to describe what actually happens to a patient who walks into the ward with chest pain.
 
-**Domain modeled**: organization and clinical-documentary pathway of a **Cardiology ward**.
+Two connected worlds came out of that conversation, and they shaped everything downstream:
+
+- **The clinical path** — symptom, triage, admission, history, exams, diagnosis, therapy, follow-up.
+- **The documentary path** — how each of those events becomes a report, and how reports are filed so a patient's history can be reconstructed years later.
 
 ```
-Patient → Symptom → Visit/Exams → Diagnosis → Treatment → Reports/Archive
+Sintomo → Triage → Visita → Esame → Diagnosi → Cura → Referto → Archivio
 ```
+
+| | |
+|---|---|
+| **Domain** | Cardiology ward: 25 rooms, 2 beds each, ~60 medical staff |
+| **Method** | Interview → E-R model → logical schema → MySQL implementation → test queries → Python interface |
+| **Design strategy** | Inside-out, starting from the concepts central to the interview |
+| **Normalisation** | Third normal form on all principal entities |
+| **Database** | `db62`, built in MySQL Workbench |
+
+---
+
+## 📂 What is in this folder
+
+| File | Contents |
+|---|---|
+| [`schema.sql`](schema.sql) | 21 tables, primary and foreign keys, check constraints, indexes |
+| [`seed_data.sql`](seed_data.sql) | Sample records reproducing typical cardiology pathways |
+| [`queries.sql`](queries.sql) | The validation queries, one per informational requirement |
+| [`validate.py`](validate.py) | Runs all three without needing a MySQL server |
+| [`report_conclusivo_DB.pdf`](report_conclusivo_DB.pdf) | Full report: interview, E-R diagram, logical schema, physical model |
+
+```
+$ python validate.py
+
+schema.sql: 37 statements executed
+seed_data.sql: 21 statements executed
+tables created: 21
+foreign key violations: 0
+all statements executed, referential integrity holds
+```
+
+`validate.py` translates the MySQL dialect to SQLite in memory, loads the schema and sample data with foreign keys enforced, then runs every query and prints its output. A broken reference or a typo in a join fails the run.
+
+---
+
+## 📊 Sizing the database
+
+Volumes were estimated from the interview, annually, and used to justify the choice of keys and indexes.
+
+| Entity | Type | Annual volume | | Entity | Type | Annual volume |
+|---|:-:|---:|---|---|:-:|---:|
+| Referto | E | 30,000 | | Stanza | E | 25 |
+| Diagnosi | E | 30,000 | | Infermiere | E | 22 |
+| Esame | E | 18,000 | | OSS | E | 12 |
+| Sintomo | E | 15,000 | | Letto | E | 50 |
+| Paziente | E | 12,000 | | Turno | E | 4 |
+| Visita | E | 12,000 | | Composizione | R | 3 |
+| Cura | E | 11,000 | | Archivio | E | 1 |
+| Medico | E | 60 <sub>(20 strutturati)</sub> | | Rappresentante | E | 1 |
+
+Two relations carry volume of their own: `Svolgimento_Visita` and `Esaminazione_Medico`, both at 12,000.
+
+The shape of that table drove the design. **Referti and diagnosi are the heaviest tables, at more than twice the patient count**, because one admission generates many documents. Meanwhile rooms, beds and shifts are tiny and effectively static. Indexing effort went where the rows are: `Referto(paziente, data_referto)`, `Diagnosi(paziente)`, `Esame(paziente, data_esame)`.
+
+### Operations
+
+| # | Operation | Type | Annual frequency |
+|---|---|:-:|---:|
+| 1 | Register patient demographics at first access or admission | I | 12,000 |
+| 2 | File a new report in the clinical archive | B | 30,000 |
+| 3 | Carry out a visit, updating diagnosis and therapy | I | 12,000 |
+| 4 | Prescribe a drug or a specific therapy | I | 18,000 |
+| 5 | Issue a materials order through the representative | I | 200 |
+| 6 | Report on an exam and attach it to the patient | B | 30,000 |
+| 7 | Record a new symptom reported by the patient | I | 15,000 |
+| 8 | Perform a diagnostic exam and record its outcome | I | 18,000 |
+
+<sub>I = interactive, B = batch.</sub>
+
+The two batch operations are also the two highest-volume ones, which is convenient: the heaviest work is the work that does not need to answer in real time.
+
+---
+
+## 🗂️ Schema
+
+Twenty-one tables in four groups.
+
+**Clinical path** — `Paziente`, `Sintomo`, `Visita`, `Esame`, `Diagnosi`, `Cura`
+
+**Documents** — `Referto`, `Archivio`
+
+**Staff and structure** — `Medico`, `Specializzando`, `Infermiere`, `OSS`, `Turno`, `Stanza`, `Letto`
+
+**Pharmacy** — `Medicinale`, `Prescrizione`, `Rappresentante`, `Ordine`
+
+**Associative** — `Composizione`, `Esaminazione_Medico`
+
+```sql
+CREATE TABLE Referto (
+    id            INT AUTO_INCREMENT PRIMARY KEY,
+    paziente      CHAR(16)     NOT NULL,
+    id_archivio   INT          NOT NULL,
+    visita        INT          NULL,
+    esame         INT          NULL,
+    data_referto  DATETIME     NOT NULL,
+    contenuto     TEXT         NOT NULL,
+    CONSTRAINT fk_ref_paziente FOREIGN KEY (paziente) REFERENCES Paziente(cf)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT chk_ref_origine CHECK (visita IS NOT NULL OR esame IS NOT NULL)
+) ENGINE=InnoDB;
+```
+
+Three modelling decisions worth pointing at:
+
+**A report must come from somewhere.** `Referto` links optionally to a visit *and* optionally to an exam, but `chk_ref_origine` requires at least one of them. A document with no clinical event behind it cannot be filed.
+
+**Clinical history is never deleted.** Foreign keys from `Visita`, `Esame`, `Diagnosi` and `Referto` back to `Paziente` use `ON DELETE RESTRICT`. A patient with any recorded history cannot be removed. `Sintomo` is the exception and cascades, since a symptom has no meaning detached from the patient who reported it.
+
+**Prescriptions are traceable to a doctor.** `Prescrizione` carries a foreign key to `Medico` alongside the one to `Cura`, so the question "who prescribed this" is answerable directly rather than inferred from the visit.
+
+---
+
+## 🔍 Validation queries
+
+Eight queries, each covering an informational requirement from the analysis. All of them run in `validate.py`.
+
+| | Question |
+|---|---|
+| Q1 | Demographics of every patient filed under a given archive |
+| Q2 | Record a new myocardial infarction diagnosis |
+| Q3 | Every exam performed on each patient, with outcomes |
+| Q4 | Mean patient age per recorded symptom |
+| Q5 | Youngest patient carrying a heart failure diagnosis |
+| Q6 | Which drugs each doctor prescribed, and to which patients |
+| Q7 | Bed occupancy by room |
+| Q8 | One patient's complete path, symptom to therapy |
+
+Q6 is the one that exercises the schema hardest, crossing five tables to connect a prescribing doctor to the patient who ends up taking the drug:
+
+```sql
+SELECT m.cognome AS medico, med.nome AS medicinale, p.cognome AS paziente, pr.posologia
+FROM Prescrizione pr
+JOIN Medico m       ON m.cf = pr.medico
+JOIN Medicinale med ON med.codice_atc = pr.medicinale
+JOIN Cura c         ON c.id = pr.cura
+JOIN Diagnosi d     ON d.id = c.diagnosi
+JOIN Paziente p     ON p.cf = d.paziente
+ORDER BY m.cognome, p.cognome;
+```
+
+```
+medico   | medicinale  | paziente | posologia
+Marroni  | Ramipril    | Bianco   | 5 mg once daily
+Marroni  | Bisoprololo | Bianco   | 2.5 mg once daily
+Marroni  | Furosemide  | Marino   | 25 mg twice daily
+Verdi    | Rivaroxaban | Greco    | 20 mg once daily
+```
+
+Q7 answers a logistics question rather than a clinical one, which is the point of having modelled rooms and beds at all:
+
+```
+stanza | tipo                | letti | occupati | liberi
+ST-103 | osservazione        | 2     | 0        | 2
+ST-201 | preospedalizzazione | 2     | 0        | 2
+ST-101 | degenza             | 2     | 1        | 1
+ST-102 | degenza             | 2     | 2        | 0
+```
+
+---
+
+## ⚙️ Running it
+
+Against a real MySQL server:
+
+```bash
+mysql -u root -p < schema.sql
+mysql -u root -p < seed_data.sql
+mysql -u root -p db62 < queries.sql
+```
+
+Without one, using only the Python standard library:
+
+```bash
+python validate.py
+```
+
+The original project also included a Python interface built on `mysql.connector` and tested in Colab, exposing the queries above through a small menu so the database could be explored without writing SQL by hand. That notebook is described in the report but is not part of this folder.
 
 ---
 
 ## 👥 Team
 
-| Member | Role |
+| Name | Role |
 |--------|------|
 | **Francesco Natali** | Design & Implementation |
 | **Davide Di Brango** | Design & Implementation |
 | **Davide Anello** | Design & Implementation |
 | **Leonardo Agate** | Design & Implementation |
-
----
-
-## 🎯 Project Objectives
-
-| Phase | Description |
-|-------|-------------|
-| 📝 **Requirements Gathering** | Structured interview with a cardiovascular disease resident (Policlinico Gemelli) |
-| 📐 **Design** | Conceptual ER schema → Logical relational schema → Physical MySQL implementation |
-| ✅ **Validation** | Test data, representative SQL queries, Python interface |
-
----
-
-## 📁 Repository Structure
-
-```
-cardiology-database/
-│
-├── 📂 docs/
-│   ├── Project_Report.pdf          # Complete documentation
-│   ├── Requirements_Interview.pdf  # Interview transcript
-│   └── Volume_Operations_Table.xlsx
-│
-├── 📂 diagrams/
-│   ├── ER_Conceptual_Schema.png    # ER diagram
-│   ├── ER_Conceptual_Schema.mwb    # MySQL Workbench file
-│   └── Logical_Schema.png          # Relational schema
-│
-├── 📂 sql/
-│   ├── 01_create_database.sql      # DB and tables creation
-│   ├── 02_constraints.sql          # PK, FK, constraints
-│   ├── 03_indexes.sql              # Optimization indexes
-│   ├── 04_insert_test_data.sql     # ~80 test records
-│   └── 05_queries.sql              # Validation queries
-│
-├── 📂 python/
-│   ├── db_interface.ipynb          # Colab notebook with interface
-│   └── db_connector.py             # MySQL connection module
-│
-├── 📂 data/
-│   └── db62_dump.sql               # Complete database dump
-│
-└── README.md
-```
-
----
-
-## 🧱 Design & Implementation
-
-### Domain Analysis
-
-The modeled clinical pathway covers the entire flow of a cardiology patient:
-
-```
-┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐
-│ TRIAGE  │ → │ PATIENT │ → │ MEDICAL │ → │  EXAMS  │ → │DIAGNOSIS│
-│         │    │ INTAKE  │    │ HISTORY │    │ (ECG,..)│    │         │
-└─────────┘    └─────────┘    └─────────┘    └─────────┘    └─────────┘
-                                                                  ↓
-┌─────────┐    ┌─────────┐    ┌─────────┐                  ┌─────────┐
-│ ARCHIVE │ ← │ REPORT  │ ← │FOLLOW-UP│ ←──────────────── │TREATMENT│
-│         │    │         │    │         │                  │         │
-└─────────┘    └─────────┘    └─────────┘                  └─────────┘
-```
-
-### ER Schema (Conceptual)
-
-**Main Entities:**
-
-| Entity | Description | Key Attributes |
-|--------|-------------|----------------|
-| `PATIENT` | Patient registry | SSN, FirstName, LastName, BirthDate |
-| `PHYSICIAN` | Healthcare staff | ID, Specialization |
-| `VISIT` | Clinical encounter | ID, Date, Time, Type |
-| `EXAM` | Diagnostic test | ID, Type (ECG, Echo, ...), Result |
-| `DIAGNOSIS` | Identified pathology | ID, ICD Code, Description |
-| `TREATMENT` | Therapeutic plan | ID, Type (drug/procedure) |
-| `MEDICATION` | Prescribed drug | ATC Code, Name, Dosage |
-| `REPORT` | Clinical document | ID, Date, Content |
-
-**Relationships:**
-
-```
-PATIENT ──(1,N)── VISIT ──(N,1)── PHYSICIAN
-    │                 │
-    │                 ├──(1,N)── EXAM
-    │                 │
-    └──(1,N)── DIAGNOSIS ──(1,N)── TREATMENT ──(N,M)── MEDICATION
-```
-
-### Volume & Operations Estimation
-
-**Volume Table (annual):**
-
-| Entity/Relationship | Estimated Volume |
-|---------------------|------------------|
-| Patient | 5,000 |
-| Visit | 15,000 |
-| Exam | 30,000 |
-| Diagnosis | 8,000 |
-| Report | 20,000 |
-| Physician | 50 |
-
-**Operations Table:**
-
-| Operation | Type | Frequency |
-|-----------|------|-----------|
-| Insert new visit | Interactive | 50/day |
-| Search patient history | Interactive | 100/day |
-| Monthly diagnosis report | Batch | 1/month |
-| Archive reports backup | Batch | 1/week |
-
-### Physical Implementation
-
-**Database**: `db62` (MySQL 8.0)
-
-```sql
--- Example: PATIENT table creation
-CREATE TABLE Patient (
-    SSN VARCHAR(16) PRIMARY KEY,
-    FirstName VARCHAR(50) NOT NULL,
-    LastName VARCHAR(50) NOT NULL,
-    BirthDate DATE NOT NULL,
-    Gender ENUM('M', 'F') NOT NULL,
-    Phone VARCHAR(15),
-    Email VARCHAR(100),
-    Address VARCHAR(200)
-);
-
--- Foreign Key example
-ALTER TABLE Visit
-ADD CONSTRAINT fk_visit_patient
-FOREIGN KEY (PatientSSN) REFERENCES Patient(SSN)
-ON DELETE RESTRICT ON UPDATE CASCADE;
-```
-
-**Indexes created:**
-
-```sql
--- Indexes for frequent searches
-CREATE INDEX idx_patient_lastname ON Patient(LastName);
-CREATE INDEX idx_visit_date ON Visit(Date);
-CREATE INDEX idx_exam_type ON Exam(Type);
-```
-
-**Test data**: ~80 records inserted to simulate realistic clinical pathways.
-
----
-
-## Queries & Validation
-
-### Test SQL Queries
-
-**1. Patient-Exams Join (clinical history):**
-```sql
-SELECT p.SSN, p.LastName, p.FirstName, e.Type, e.Date, e.Result
-FROM Patient p
-JOIN Visit v ON p.SSN = v.PatientSSN
-JOIN Exam e ON v.ID = e.VisitID
-WHERE p.SSN = 'RSSMRA80A01H501Z'
-ORDER BY e.Date DESC;
-```
-
-**2. Average age aggregation by symptom:**
-```sql
-SELECT s.Description AS Symptom,
-       AVG(YEAR(CURDATE()) - YEAR(p.BirthDate)) AS AvgAge,
-       COUNT(*) AS PatientCount
-FROM Patient p
-JOIN Visit v ON p.SSN = v.PatientSSN
-JOIN Symptom s ON v.ID = s.VisitID
-GROUP BY s.Description
-ORDER BY PatientCount DESC;
-```
-
-**3. Prescriptions Physician → Patient → Medication:**
-```sql
-SELECT ph.LastName AS Physician,
-       p.LastName AS Patient,
-       med.Name AS Drug,
-       t.Dosage,
-       t.Duration
-FROM Physician ph
-JOIN Visit v ON ph.ID = v.PhysicianID
-JOIN Patient p ON v.PatientSSN = p.SSN
-JOIN Treatment t ON v.ID = t.VisitID
-JOIN Medication med ON t.MedicationID = med.Code
-WHERE ph.ID = 'MED001';
-```
-
-**4. Diagnosis count by pathology:**
-```sql
-SELECT d.ICDCode, d.Description, COUNT(*) AS Occurrences
-FROM Diagnosis d
-GROUP BY d.ICDCode, d.Description
-ORDER BY Occurrences DESC
-LIMIT 10;
-```
-
----
-
-## Python Interface
-
-Colab notebook with MySQL connection and functions for frequent queries.
-
-### Database Connection
-
-```python
-import mysql.connector
-import pandas as pd
-
-def connect_db():
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="db62"
-    )
-
-def execute_query(query):
-    conn = connect_db()
-    df = pd.read_sql(query, conn)
-    conn.close()
-    return df
-```
-
-### Interactive Menu
-
-```python
-def menu():
-    print("=" * 50)
-    print("  CARDIOLOGY INFORMATION SYSTEM - db62")
-    print("=" * 50)
-    print("1. Search patient by SSN")
-    print("2. Patient exam history")
-    print("3. Visit list by date")
-    print("4. Monthly diagnosis report")
-    print("5. Prescriptions by physician")
-    print("0. Exit")
-    print("=" * 50)
-    return input("Select option: ")
-```
-
-### Example Output
-
-```
-┌────────────┬──────────┬────────┬────────────┬─────────┐
-│ SSN        │ LastName │ First  │ Exam Type  │ Result  │
-├────────────┼──────────┼────────┼────────────┼─────────┤
-│ RSSMRA80.. │ Rossi    │ Mario  │ ECG        │ Normal  │
-│ RSSMRA80.. │ Rossi    │ Mario  │ Echocardio │ Mild..  │
-│ RSSMRA80.. │ Rossi    │ Mario  │ Holter     │ Normal  │
-└────────────┴──────────┴────────┴────────────┴─────────┘
-```
-
----
-
-## Tools & Stack
-
-| Tool | Purpose |
-|------|---------|
-| **MySQL 8.0** | Relational DBMS |
-| **MySQL Workbench** | ER design & administration |
-| **Python 3.x** | Query interface |
-| **pandas** | Tabular result display |
-| **mysql-connector-python** | Connection driver |
-| **Google Colab** | Notebook environment |
-
-
-
-
