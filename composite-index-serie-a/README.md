@@ -1,199 +1,133 @@
-# ⚽ Advanced Composite Indicators (Mini-course Project)
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Tools-Python%20%7C%20Excel-green?style=for-the-badge" alt="Tools">
-  <img src="https://img.shields.io/badge/Methods-Normalization%20%7C%20Weighting%20%7C%20Sub--Indices-blue?style=for-the-badge" alt="Methods">
-  <img src="https://img.shields.io/badge/University-Sapienza-darkred?style=for-the-badge" alt="Sapienza">
-  <img src="https://img.shields.io/badge/Project-Composite%20Index-orange?style=for-the-badge" alt="Project">
-</p>
+# ⚽ Team Competitiveness Composite Index
 
-<p align="center">
-  <b>Final project: design and build an advanced composite indicator from scratch</b>
-</p>
+**Ranking a decade of Serie A with the Adjusted Mazziotta-Pareto Index**
 
----
+<img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white" alt="R">
+<img src="https://img.shields.io/badge/Compind-AMPI-1a7f37?style=for-the-badge" alt="Compind">
+<img src="https://img.shields.io/badge/Sapienza-8b1a1a?style=for-the-badge" alt="Sapienza">
 
-## 📋 Overview
+<sub>Composite Indicators · MSc in Statistical Methods and Applications · Sapienza University of Rome</sub>
 
-This repository contains the final project developed for a **mini-course focused on advanced composite indicator construction**, where the exam consisted of designing and building a composite index on a topic of choice.
-
-The project delivers a **full composite-index pipeline**:
-- Goal definition
-- Data collection
-- Indicator design
-- Normalization
-- Weighting
-- Aggregation into sub-indices
-- Time-series tracking
+</div>
 
 ---
 
-## Project: TCCI (Title Contention Composite Index)
+## 📋 The idea
 
-The final project proposes the **TCCI – Title Contention Composite Index**, designed to assess a football team's likelihood of winning the league title by combining performance and contextual dimensions into a single score.
+League tables rank teams by points. Points measure one season of results and nothing else — not the squad behind them, not the finances holding it up, not whether the team has been good for a decade or got lucky in May.
 
-### Objectives
+This project builds a **composite index of competitiveness** for twelve Serie A clubs across eight seasons, aggregating four dimensions that a table cannot show.
 
-| Goal | Description |
-|------|-------------|
-| 🏆 **Identify Contenders** | Rank teams by title-winning potential |
-| 📈 **Track Changes** | Monitor evolution across seasons |
-| ⚠️ **Highlight Under-performance** | Detect gaps between expectations and outcomes |
+| Sub-index | What it captures | Indicators |
+|---|---|---:|
+| 🏆 **Historical** | Sustained standing over time | 7 |
+| 🛡️ **Defensive** | Solidity without the ball | 8 |
+| ⚡ **Offensive** | Creation and conversion | 6 |
+| 💰 **Market** | Financial and structural base | 8 |
 
+Teams: Atalanta, Bologna, Fiorentina, Inter, Juventus, Lazio, Milan, Napoli, Roma, Sassuolo, Torino, Udinese.
+
+---
+
+## 🔧 Why AMPI
+
+A composite index has to solve a problem a simple average ignores: **should a team be allowed to compensate a terrible defence with a brilliant attack?**
+
+Weighted averages say yes. The **Adjusted Mazziotta-Pareto Index** says only partly. It normalises each indicator against fixed goalposts, then subtracts a penalty proportional to the variability across indicators. A team that is uniformly good scores better than a team with the same mean but wild swings between dimensions.
+
+```r
+goals1 <- apply(df1[df1$Year == "2016/17", c(3:9)], 2, median)
+
+CI1 <- ci_ampi(df1,
+               indic_col = c(3:9),
+               gp        = goals1,
+               time      = df1$Year,
+               polarity  = c("NEG","POS","POS","POS","POS","POS","NEG"),
+               penalty   = "POS")
 ```
-TCCI Score → Higher = More likely title contender
+
+Two design choices in there are worth naming.
+
+**Fixed goalposts from a reference season.** The medians of 2016/17 anchor the scale, so scores are comparable *across years* rather than being renormalised each season. Without this, a team could improve while its index falls, simply because the league improved faster.
+
+**Explicit polarity per indicator.** `Position` and `Ncoach` are `NEG`: finishing lower and burning through coaches both hurt. Everything else is `POS`. Getting this vector wrong silently inverts an indicator's meaning, which is the classic way composite indices go wrong without anyone noticing.
+
+---
+
+## 📊 The four sub-indices
+
+<details>
+<summary><b>Indicator lists and polarities</b></summary>
+
+<br>
+
+**Historical** — `Position`, `PPG` (points per game), `DR` (goal difference), `CupWins`, `EuropePart`, `Trophies`, `Ncoach`
+<sub>NEG, POS, POS, POS, POS, POS, NEG</sub>
+
+**Defensive** — `XGS` (expected goals against), `GS` (goals conceded), `PercPar` (save percentage), `PortInv` (clean sheets), `Amm` (bookings), `Fouls`, `Int` (interceptions), `TackW` (tackles won)
+<sub>POS, NEG, POS, POS, NEG, NEG, POS, POS</sub>
+
+**Offensive** — `Bposs` (possession), `XG`, `GF` (goals for), `Shoot`, `PassCompl`, `Dribbling`
+<sub>POS, NEG, POS, POS, POS, POS</sub>
+
+**Market** — `DIRITTI` (broadcast rights), `COSTOROSA` (squad cost), `VALKEYPLAYERS`, `DEBIT` (debt), `TRANSF` (transfer balance), `STADIUM`, `OLD` (average age), `MANAGER`
+<sub>POS, POS, POS, NEG, POS, POS, NEG, POS</sub>
+
+</details>
+
+Each sub-index gets its own goalposts and penalty term, then a trend plot across seasons, so a club's trajectory is visible rather than just its current standing.
+
+---
+
+## ⚠️ A weighting bug worth fixing
+
+The four sub-indices are combined at line 213:
+
+```r
+CI <- CI1$ci_ampi_est*0.3 + CI2$ci_ampi_est*0.3 + CI3$ci_ampi_est*0.3 + CI4$ci_ampi_est*0.2
+```
+
+**Those weights sum to 1.1, not 1.**
+
+AMPI produces indices centred on 100 by construction. A weighted sum whose weights total 1.1 therefore centres the final TCCI near 110, on a scale that no longer means what the sub-indices mean. The ordering between clubs is unaffected, since the combination is linear and fixed, but the absolute value cannot be read against the 100 baseline and comparing the composite to any sub-index is misleading.
+
+The intended split was presumably 0.3 / 0.3 / 0.2 / 0.2, giving the three sporting dimensions three quarters of the weight and finance one quarter.
+
+Two smaller issues sit in the badge-plotting block:
+
+```r
+img <- png::readPNG(Images)
+df  <- cbind(df, Images)              # df does not exist yet
+df  <- read.csv(".../CompInd.csv")    # it is created here, four lines later
+```
+
+`df` is used before assignment, and `readPNG` receives a 96-element vector where it expects one path. Cosmetic in intent, but they stop the script if it is run top to bottom.
+
+Paths are absolute and local throughout:
+
+```r
+sPath = "C:/Users/frank/OneDrive/Desktop/Composite indicators/"
 ```
 
 ---
 
-## 🧾 Data Sources
+## 📂 Files
 
-| Source | Data Type | Coverage |
-|--------|-----------|----------|
-| **Opta / Optascore** | Match statistics, xG, shots, possession | 2015/16 – 2022/23 |
-| **Transfermarkt** | Market values, squad spending, financials | 2015/16 – 2022/23 |
+| File | Contents |
+|---|---|
+| [`HistInd.R`](HistInd.R) | Full pipeline: four AMPI sub-indices, aggregation, trend plots |
+| [`CompInd.xlsx`](CompInd.xlsx) | Sporting indicators, 12 clubs across the seasons |
+| [`CompInd2.xlsx`](CompInd2.xlsx) | Financial and structural indicators |
+| [`composit_index (1).pdf`](composit_index%20\(1\).pdf) | Report with the resulting rankings and trend charts |
 
-**Time-series perspective**: Index rankings are compared against actual league-table outcomes across 8 seasons.
-
----
-
-## Methodology
-
-### Pipeline Overview
-
-```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│    RAW      │ → │ NORMALIZED  │ → │ SUB-INDICES │ → │    TCCI     │
-│    DATA     │    │ INDICATORS  │    │   (4)       │    │   SCORE    │
-└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
-     ↑                   ↑                  ↑                  ↑
-   Opta            AMPI-style          Weighted           Weighted
- Transfermarkt     goalposts           average            average
-```
-
-### 1. Normalization: AMPI Method
-
-**AMPI (Adjusted Mazziotta-Pareto Index)** style rescaling using goalposts (min/max bounds) to allow **absolute comparisons over time**.
-
-$$x_{i,t}^{norm} = \frac{x_{i,t} - GP_{min}}{GP_{max} - GP_{min}} \times 100$$
-
-Where:
-- $GP_{min}$ = goalpost minimum (fixed reference)
-- $GP_{max}$ = goalpost maximum (fixed reference)
-
-**Advantage**: Enables cross-season comparisons (not relative to single-year distribution).
-
-### 2. Index Structure
-
-**TCCI** is a weighted aggregation of **4 sub-indices**:
-
-```
-                         ┌──────────────────┐
-                         │      TCCI        │
-                         │  (Final Score)   │
-                         └────────┬─────────┘
-                                  │
-        ┌─────────────┬───────────┼───────────┬─────────────┐
-        │             │           │           │             │
-   ┌────▼────┐   ┌────▼────┐ ┌────▼────┐ ┌────▼────┐
-   │OFFENSIVE│   │DEFENSIVE│ │HISTORICAL│ │ MARKET │
-   │  INDEX  │   │  INDEX  │ │  INDEX  │ │  INDEX │
-   │  (0.3)  │   │  (0.3)  │ │  (0.2)  │ │  (0.2) │
-   └─────────┘   └─────────┘ └─────────┘ └─────────┘
-```
-
-| Sub-Index | Weight | Focus |
-|-----------|--------|-------|
-| 🔴 **Offensive** | 30% | Attacking performance |
-| 🔵 **Defensive** | 30% | Defensive solidity |
-| 🟡 **Historical** | 20% | Past achievements |
-| 🟢 **Market** | 20% | Financial strength |
-
-### 3. Indicators by Sub-Index
-
-#### 🔴 Offensive Index (0.3)
-
-| Indicator | Description | Polarity |
-|-----------|-------------|----------|
-| xG (Expected Goals) | Attacking quality | + |
-| xG Overperformance | Goals - xG gap | + |
-| Shots per match | Volume of attacks | + |
-| Possession % | Ball control | + |
-| Pass accuracy | Build-up quality | + |
-
-#### 🔵 Defensive Index (0.3)
-
-| Indicator | Description | Polarity |
-|-----------|-------------|----------|
-| xGA (Expected Goals Against) | Defensive exposure | - |
-| Clean sheets | Matches without conceding | + |
-| Goals conceded | Actual defensive output | - |
-| xGA Overperformance | Conceded - xGA gap | - |
-
-#### 🟡 Historical Index (0.2)
-
-| Indicator | Description | Polarity |
-|-----------|-------------|----------|
-| League titles (last 10y) | Championship pedigree | + |
-| Average league position | Consistency | + |
-| Points per season (avg) | Historical strength | + |
-| European qualifications | Top-tier finishes | + |
-
-#### 🟢 Market Index (0.2)
-
-| Indicator | Description | Polarity |
-|-----------|-------------|----------|
-| Squad market value | Overall squad worth | + |
-| Net transfer spending | Investment capacity | + |
-| Wage bill | Financial commitment | + |
-| Revenue | Club financial health | + |
-
-### 4. Aggregation Formula
-
-**Sub-index calculation:**
-$$SI_k = \sum_{j=1}^{m_k} w_j \cdot x_j^{norm}$$
-
-**Final TCCI:**
-$$TCCI = 0.3 \cdot SI_{off} + 0.3 \cdot SI_{def} + 0.2 \cdot SI_{hist} + 0.2 \cdot SI_{mkt}$$
-
-
-## 🛠️ Tools & Stack
-
-| Tool | Purpose |
-|------|---------|
-| **R** | Data processing & analysis |
-| **Excel** | Initial data exploration |
-
+**Running it.** Needs R with `Compind`, `dplyr`, `ggplot2`, `reshape2`, `ggimage` and `png`. The script reads `CompInd.csv`; the workbooks here hold the same data in Excel form. The club badge PNGs referenced by `sPath` are not included, so the `geom_image` blocks will not run.
 
 ---
 
-## 📈 Key Insights
+## 📖 References
 
-### Methodological Takeaways
-
-1. **Goalposts matter**: Fixed min/max bounds enable meaningful cross-season comparisons
-2. **Balance is key**: 60% performance (off+def) vs 40% context (history+market)
-3. **xG metrics**: Expected goals provide stable signal vs raw goals (less noise)
-4. **Financial dimension**: Market value correlates strongly with title contention
-
-### Validation
-
-| Metric | Value |
-|--------|-------|
-| Correlation (TCCI vs Final Points) | ~0.85 |
-| Correct Top-3 Prediction | 7/8 seasons |
-| Title Winner in Top-2 TCCI | 8/8 seasons |
-
----
-
-## 📚 References
-
+- Mazziotta, M. & Pareto, A. (2016). On a generalized non-compensatory composite index for measuring socio-economic phenomena. *Social Indicators Research*, 127(3), 983–1003.
+- Fusco, E., Vidoli, F. & Sahoo, B.K. (2018). Spatial heterogeneity in composite indicators. *Social Indicators Research*, 137(2), 635–658.
 - OECD (2008). *Handbook on Constructing Composite Indicators: Methodology and User Guide*.
-- Mazziotta, M. & Pareto, A. (2013). Methods for Constructing Composite Indices. *Rivista Italiana di Economia Demografia e Statistica*.
-- Opta Sports: https://www.optasports.com/
-- Transfermarkt: https://www.transfermarkt.com/
-
-
-  <br>
-  <i>Sapienza Università di Roma • Advanced Composite Indicators • A.Y. 2024/2025</i>
-</p>
