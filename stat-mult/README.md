@@ -1,222 +1,127 @@
-# Multivariate Analysis with SAS (BSc Coursework)
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Tools-SAS-green?style=for-the-badge" alt="Tools">
-  <img src="https://img.shields.io/badge/Methods-PCA%20%7C%20Clustering%20%7C%20Regression-blue?style=for-the-badge" alt="Methods">
-  <img src="https://img.shields.io/badge/University-Sapienza-darkred?style=for-the-badge" alt="Sapienza">
-  <img src="https://img.shields.io/badge/Level-BSc-orange?style=for-the-badge" alt="Level">
-</p>
+# 📐 Multivariate Analysis with SAS
 
-<p align="center">
-  <b>Hands-on multivariate workflows: exploration, dimensionality reduction, clustering, and modelling</b>
-</p>
+**Five case studies: description, dimensionality reduction, clustering, regression**
 
----
+<img src="https://img.shields.io/badge/SAS-1a5f7a?style=for-the-badge" alt="SAS">
+<img src="https://img.shields.io/badge/PCA%20·%20Clustering%20·%20Regression-1a7f37?style=for-the-badge" alt="Methods">
+<img src="https://img.shields.io/badge/Sapienza-8b1a1a?style=for-the-badge" alt="Sapienza">
 
-## Overview
+<sub>Multivariate Data Analysis · BSc · Sapienza University of Rome</sub>
 
-This repository collects a set of **Bachelor-level assignments** developed in a Multivariate Data Analysis course using **SAS**, covering end-to-end workflows from descriptive statistics to multivariate modelling.
-
-Each exercise:
-- Starts from a real (or realistic) dataset
-- Applies multivariate techniques
-- Provides an interpretable statistical narrative
-
-**Focus**: Relationships between variables and similarity patterns among statistical units.
+</div>
 
 ---
 
-## Case Studies exaples
+## 📋 Overview
 
-### 1. European Diet Patterns (`dieta.pdf`)
+Five independent case studies, each following the same arc: describe the data honestly, find the linear structure inside it, reduce it to something interpretable, then group the units that behave alike.
 
-**Dataset**: 16 European countries × 10 food consumption variables
+The datasets are deliberately unglamorous — fruit harvests, washing machines, exam grades — which is the point. The techniques are the same ones used on data that matters, and small tidy datasets make it obvious when a method is being misapplied.
 
-| Variable | Unit | Description |
-|----------|------|-------------|
-| Cereali | kg | Cereals consumption |
-| Riso | kg | Rice consumption |
-| Patate | kg | Potatoes consumption |
-| Zucchero | kg | Sugar consumption |
-| Verdure | kg | Vegetables consumption |
-| Vino | L | Wine consumption |
-| Carne | kg | Meat consumption |
-| Latte | L | Milk consumption |
-| Burro | kg | Butter consumption |
-| Uova | kg | Eggs consumption |
-
-**Objectives:**
-- Analyze and describe dietary habits across European countries
-- Identify linear relationships between food consumption patterns
-- Detect country similarities through dimensionality reduction
-
-**Key Findings:**
-
-| Food | Mean | Median | CV (%) | Interpretation |
-|------|------|--------|--------|----------------|
-| Milk | 128.4 L | 125.3 L | 35.8 | Most consumed, high variability |
-| Vegetables | 95.6 kg | 82.5 kg | 57.5 | High heterogeneity (Greece outlier) |
-| Wine | 25.9 L | 21.5 L | 75.9 | Highest variability across countries |
-| Rice | 4.2 kg | 4.3 kg | 28.9 | Least consumed |
-
-**PCA Results (4 components, 83.7% variance):**
-
-| PC | Interpretation | Key Loadings |
-|----|----------------|--------------|
-| PC1 | Mediterranean diet | +Rice, +Vegetables, +Wine, −Sugar, −Milk |
-| PC2 | Protein-rich diet | +Meat, +Eggs, +Butter, −Milk, −Rice |
-| PC3 | Grain-based diet | +Cereals, +Vegetables, −Butter |
-| PC4 | Starch indicator | +Potatoes |
-
-**Country Profiles:**
-- 🇮🇹🇪🇸🇵🇹 **Mediterranean cluster**: High PC1 scores (rice, vegetables, wine)
-- 🇫🇷🇩🇪🇩🇰 **Central European cluster**: High PC2 scores (meat, eggs, butter)
-- 🇮🇪 **Ireland**: Outlier on PC4 (highest potato consumption)
+| Exercise | File | Units × variables | Question |
+|---|---|---|---|
+| 1 · Fruit | [`frutta.pdf`](frutta.pdf) | 20 Italian regions × 7 crops | Which regions specialise in what, and which behave alike? |
+| 3 · Students | [`student.pdf`](student.pdf) | 88 students × 5 exams | Do open-book exams produce different outcomes from closed-book? |
+| 5 · Washing machines | [`lavatrici.pdf`](lavatrici.pdf) | 16 models × 6 features | What actually drives the price? |
+| · Diet | [`dieta.pdf`](dieta.pdf) | European countries × 10 foods | What dietary patterns exist across Europe? |
+| · Cereals, Labour force | [`Cereali.docx`](Cereali.docx), [`FORZA LAVORO.docx`](FORZA%20LAVORO.docx) | — | Further case studies |
 
 ---
 
-### 2. Life Expectancy Analysis (`countries_lifeexp.pdf`)
+## 🍇 Exercise 1 — Fruit production across Italian regions
 
-**Dataset**: 38 countries × 12 socio-economic indicators
+Seven woody crops measured across all 20 regions: table grapes, wine grapes, wine produced, oranges, mandarins, clementines, lemons.
 
-| Variable | Description |
-|----------|-------------|
-| Region | Geographic region |
-| Area | Surface area |
-| Irrigated | % irrigated land |
-| Pop | Population density |
-| Under14 | % population under 14 |
-| LifeExp | Life expectancy at birth |
-| Literacy | Literacy rate |
-| Unemployment | Unemployment rate |
-| ISP | Social institutions per million |
-| TV | TVs per person |
-| Railways | Railway km / area |
-| Airports | Airports / area |
+| Variable | Mean | Median | CV |
+|---|---:|---:|---:|
+| Wine grapes | 3,677.35 | 2,364.50 | 94.48 |
+| Wine produced | 2,746.35 | 1,618.50 | 97.10 |
+| Oranges | 924.25 | 0.00 | 289.32 |
+| Table grapes | 539.80 | 20.00 | 261.13 |
+| Lemons | 331.70 | 0.00 | 382.56 |
 
-**Objectives:**
-1. Analyze life expectancy determinants via PCA and clustering
-2. Build predictive regression model for life expectancy
-3. Evaluate multicollinearity and influential observations
+**Every mean sits far above its median, and four of the seven medians are zero.** More than half of Italy's regions produce no citrus at all — Lombardy, Piedmont, Valle d'Aosta, Trentino Alto Adige and Veneto grow none — so the distributions are not skewed by outliers so much as split into producers and non-producers.
 
-**Methods Applied:**
-- Principal Component Analysis with Varimax rotation
-- Hierarchical clustering (Ward's method)
-- Multiple linear regression with diagnostics
+That structure is the finding. Citrus and table grapes separate the south; wine grapes are the one crop grown, at varying intensity, everywhere.
 
 ---
 
-### 3. Labor Force Analysis (`forza_lavoro.pdf`)
+## 🎓 Exercise 3 — Do open-book exams change outcomes?
 
-**Dataset**: Regional labor force statistics
+Grades out of 100 for 88 students across five exams. **Rational Mechanics and Vector Algebra are closed-book; Algebra, Calculus and Statistics are open-book.**
 
-**Objectives:**
-- Study employment patterns across regions
-- Identify structural differences in labor markets
-- Cluster regions by workforce characteristics
+| Exam | Format | Mean | Median | SD |
+|---|---|---:|---:|---:|
+| Algebra | open | 50.60 | 50.00 | 10.56 |
+| Vector Algebra | closed | 50.59 | 51.00 | 13.07 |
+| Calculus | open | 46.68 | 49.00 | 14.76 |
+| Statistics | open | 42.31 | 40.00 | 17.16 |
+| Rational Mechanics | closed | 38.95 | 41.50 | 17.39 |
 
----
-
-## Techniques Applied
-
-### Analysis Pipeline
-
-```
-┌─────────────────┐
-│  Raw Data       │
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ Descriptive     │  PROC MEANS, PROC UNIVARIATE
-│ Statistics      │  PROC CORR
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ Standardization │  PROC STANDARD
-│ (if needed)     │
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ Dimensionality  │  PROC PRINCOMP
-│ Reduction (PCA) │  PROC FACTOR (+ Varimax)
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ Clustering      │  PROC CLUSTER (Ward)
-│                 │  PROC FASTCLUS (k-means)
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ Regression      │  PROC REG
-│ Modelling       │  (diagnostics, VIF, influence)
-└─────────────────┘
-```
-
-### SAS Procedures Used
-
-| Procedure | Purpose |
-|-----------|---------|
-| `PROC MEANS` | Descriptive statistics |
-| `PROC UNIVARIATE` | Distribution analysis |
-| `PROC CORR` | Correlation matrix |
-| `PROC STANDARD` | Data standardization |
-| `PROC PRINCOMP` | Principal Component Analysis |
-| `PROC FACTOR` | Factor Analysis with rotation |
-| `PROC CLUSTER` | Hierarchical clustering |
-| `PROC FASTCLUS` | K-means clustering |
-| `PROC REG` | Linear regression |
-| `PROC SGPLOT` | Visualization |
-
+The design invites the conclusion that open-book exams are easier. The data does not support it cleanly: the two highest means are one open-book and one closed-book exam, separated by 0.01 points. What separates the exams is **dispersion**, not level. Algebra has a standard deviation of 10.56 while Mechanics and Statistics both exceed 17, so the open-book format is not raising grades so much as the individual exams differ in how sharply they sort students.
 
 ---
 
-## Key Methodological Concepts
+## 🔌 Exercise 5 — What drives a washing machine's price?
 
-### When to Standardize?
+Sixteen models, six characteristics: price, spin speed, water consumption, depth, energy use, load capacity.
 
-| Situation | Standardize? |
-|-----------|--------------|
-| Variables in different units (kg vs L vs %) | ✅ Yes |
-| Variables with very different variances | ✅ Yes |
-| All variables in same scale, similar variance | ❌ Optional |
-| Clustering on mixed-scale data | ✅ Yes |
+| Variable | Mean | Median | CV | Range |
+|---|---:|---:|---:|---:|
+| Price ($) | 624.88 | 568.50 | 45.98 | 309–1,469 |
+| Spin (rpm) | 1,065.63 | 1,000.00 | 31.77 | 600–1,600 |
+| Water (l) | 54.25 | 53.50 | 18.84 | 39–75 |
+| Depth (cm) | 56.19 | 55.00 | 5.49 | 51–60 |
+| Energy (kWh) | 102.13 | 95.00 | 11.42 | 94–133 |
+| Load (kg) | 53.44 | 50.00 | 10.83 | 50–70 |
 
-### PCA: How Many Components?
+**Price varies eight times more than depth.** The coefficient of variation ranges from 5.49 on depth to 45.98 on price, which says machines that are nearly identical physically are sold at wildly different prices. Depth is standardised by the cabinets they slot into; price is not standardised by anything.
+
+The median load equals the minimum, so more than half the models sit at exactly 50 kg — another variable carrying almost no information for a regression.
+
+---
+
+## 🥗 Diet patterns across Europe
+
+Ten food categories per country: cereals, rice, potatoes, sugar, vegetables, wine, meat, milk, butter, eggs.
+
+| Food | Mean | Median | CV |
+|---|---:|---:|---:|
+| Milk | 128.4 L | 125.3 L | 35.8 |
+| Vegetables | 95.6 kg | 82.5 kg | 57.5 |
+| Wine | 25.9 L | 21.5 L | 75.9 |
+| Rice | 4.2 kg | 4.3 kg | 28.9 |
+
+**PCA retains four components explaining 83.7% of variance:**
+
+| Component | Interpretation | Dominant loadings |
+|---|---|---|
+| PC1 | Mediterranean diet | +rice, +vegetables, +wine, −sugar, −milk |
+| PC2 | Protein-rich diet | +meat, +eggs, +butter, −milk, −rice |
+| PC3 | Grain-based diet | +cereals, +vegetables, −butter |
+| PC4 | Starch | +potatoes |
+
+PC1 is the one worth reading: it does not describe how much people eat, it describes a *trade-off*. Rice, vegetables and wine load positively while sugar and milk load negatively, so the component separates southern from northern European eating rather than ranking countries on quantity.
+
+---
+
+## 🧭 Method notes
+
+**Choosing how many components to keep** — four criteria applied together rather than any one alone:
 
 | Criterion | Rule |
-|-----------|------|
+|---|---|
 | Kaiser | Eigenvalue > 1 |
-| Scree plot | Elbow in variance curve |
-| Cumulative variance | ≥ 70-80% explained |
-| Interpretability | Components must make sense |
+| Scree plot | Elbow in the variance curve |
+| Cumulative variance | 70–80% explained |
+| Interpretability | The components have to mean something |
 
-### Clustering: How Many Groups?
+The last one is doing real work here. A component that explains 8% of variance and loads on three unrelated variables is noise with a number attached, and no amount of eigenvalue arithmetic makes it a construct.
 
-| Method | Criterion |
-|--------|-----------|
-| Dendrogram | Visual cut at large distance jump |
-| CCC (Cubic Clustering Criterion) | Local peaks |
-| Pseudo-F | Higher is better |
-| Silhouette | Maximize average silhouette |
+**Reading the coefficient of variation first** is the habit that runs through all five exercises. Comparing standard deviations across variables measured in litres, kilograms, centimetres and dollars means nothing; the CV makes them comparable, and it is what exposes the zero-inflation in the fruit data and the standardised depth in the appliance data before any model is fitted.
 
 ---
 
-## What These Examples Demonstrate
-
-| Skill | Application |
-|-------|-------------|
-| **Dimensionality Reduction** | Reduce 10 food variables to 4 interpretable components |
-| **Pattern Discovery** | Identify Mediterranean vs Central European diets |
-| **Clustering** | Group countries by consumption similarity |
-| **Predictive Modelling** | Explain life expectancy from socio-economic indicators |
-| **Diagnostics** | Detect outliers, leverage points, multicollinearity |
-
----
-
-## 👤 Author
-
-**Francesco Natali** (1945581)
-
----
-  <i>Sapienza Università di Roma • Multivariate Data Analysis • BSc Program</i>
-</p>
+<sub>Written in SAS. Each PDF contains the full output: descriptive tables, correlation matrices, component loadings, dendrograms and regression diagnostics.</sub>
