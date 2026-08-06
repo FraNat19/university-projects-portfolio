@@ -1,159 +1,189 @@
-# GraphRAG-based LLM Agent for Workplace Safety Compliance
+<div align="center">
 
-> Master's Thesis Project | Sapienza University of Rome | 2024-2025
+# ⚖️ GraphRAG for Workplace Safety Compliance
 
-A hybrid Retrieval-Augmented Generation (RAG) system that combines semantic vector search with a legal knowledge graph to provide accurate, legally-validated answers on Italian workplace safety regulations.
+**A retrieval system that knows when the law it just cited has been repealed**
 
-## 🎯 Problem Statement
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+<img src="https://img.shields.io/badge/Neo4j-4581C3?style=for-the-badge&logo=neo4j&logoColor=white" alt="Neo4j">
+<img src="https://img.shields.io/badge/Qdrant-DC244C?style=for-the-badge" alt="Qdrant">
+<img src="https://img.shields.io/badge/SLURM-HPC-1a7f37?style=for-the-badge" alt="SLURM">
+<img src="https://img.shields.io/badge/Sapienza-8b1a1a?style=for-the-badge" alt="Sapienza">
 
-Workplace safety professionals (RSPP, consultants, inspectors) face a critical challenge: navigating thousands of technical documents and legal articles while ensuring cited regulations are still in force. Traditional search systems fail to detect when a law has been **repealed** or **modified**, potentially leading to advice based on obsolete regulations.
+<sub>Master's thesis · MSc Statistical Methods and Applications · Sapienza University of Rome · 2024/2025</sub>
 
-**Example:** Many documents still reference *D.Lgs. 626/1994*, which was repealed by *D.Lgs. 81/2008* (Article 304). A standard RAG system would return these documents without warning—our system explicitly flags this.
+</div>
 
-## Architecture
+---
+
+## 📋 The problem
+
+A safety consultant asks whether a procedure complies with *D.Lgs. 626/1994*. A standard RAG system finds a dozen documents citing that law, summarises them confidently, and is completely wrong — because 626/1994 was repealed by Article 304 of *D.Lgs. 81/2008*.
+
+The documents are not wrong. They were written when the law was in force. **Vector similarity has no way to represent "this was true and now is not."**
+
+Embeddings encode what text means, not whether it still applies. So this system runs two retrievers side by side: a vector store for meaning, and a knowledge graph for legal status.
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                            USER QUERY                               │
-│            "Is D.Lgs. 626/1994 still in force?"                     │
-└─────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                       HYBRID RETRIEVER                              │
-│  ┌───────────────────────┐      ┌───────────────────────┐          │
-│  │    QDRANT             │      │      NEO4J            │          │
-│  │    Vector Search      │      │   Knowledge Graph     │          │
-│  │  ┌─────────────────┐  │      │  ┌─────────────────┐  │          │
-│  │  │ technical_docs  │  │      │  │ CanonicalLaw    │  │          │
-│  │  │ legal_articles  │  │      │  │ Article         │  │          │
-│  │  │ legal_context   │  │      │  │ ABROGA/MODIFICA │  │          │
-│  │  └─────────────────┘  │      │  └─────────────────┘  │          │
-│  └───────────────────────┘      └───────────────────────┘          │
-│              │                            │                         │
-│              └──────────┬─────────────────┘                         │
-│                         ▼                                           │
-│              ┌─────────────────────┐                                │
-│              │  Context Enrichment │                                │
-│              │  + Legal Warnings   │                                │
-│              └─────────────────────┘                                │
-└─────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                        LLM (Qwen 2.5 72B)                           │
-│         Generates grounded response with regulatory status          │
-└─────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│  "No, D.Lgs. 626/1994 was REPEALED by Article 304 of D.Lgs.        │
-│   81/2008. The current reference for workplace safety is the        │
-│   Testo Unico (D.Lgs. 81/2008)."                                    │
-└─────────────────────────────────────────────────────────────────────┘
+                        USER QUERY
+              "Is D.Lgs. 626/1994 still in force?"
+                             │
+              ┌──────────────┴──────────────┐
+              ▼                             ▼
+     ┌─────────────────┐          ┌──────────────────┐
+     │     QDRANT      │          │      NEO4J       │
+     │  what it means  │          │  whether it holds│
+     ├─────────────────┤          ├──────────────────┤
+     │ technical_docs  │          │ CanonicalLaw     │
+     │ legal_articles  │          │ Article          │
+     │ legal_context   │          │ ABROGA / MODIFICA│
+     │ technical_images│          │ RICHIAMA / CITES │
+     └────────┬────────┘          └────────┬─────────┘
+              └──────────────┬─────────────┘
+                             ▼
+                  Context + validity warnings
+                             ▼
+                    LLM (Qwen 2.5 72B)
+                             ▼
+     "No. Repealed by Art. 304 of D.Lgs. 81/2008.
+      The current reference is the Testo Unico."
 ```
 
-## 🔧 Technical Components
+---
 
-### 1. Data Ingestion Pipeline
+## 🔑 The design decision that matters
 
-| Stage | Description | Tools |
-|-------|-------------|-------|
-| **PDF Extraction** | Layout-aware parsing preserving tables, figures, structure | Docling (IBM) |
-| **Citation Extraction** | Regex-based identification and normalization of legal references | Custom Python |
-| **Semantic Enrichment** | Risk categories, professional profiles, keywords | LLM + Clustering |
-| **Chunking** | Hierarchical splitting with overlap | LangChain-style |
-| **Embedding** | Multilingual dense vectors (1024 dim) | E5-large |
+Most hybrid retrievers extract entities from the **retrieved documents** and enrich from there. This one also extracts them from the **query itself**.
 
-### 2. Vector Database (Qdrant)
+```python
+# hybrid_retriever_v5_fixed.py
+# FIX: Estrae leggi dalla QUERY e le cerca SEMPRE nel grafo
+```
 
-Three collections for granular retrieval:
+The difference shows up exactly where it counts. Ask *"is Law X valid?"* and the vector search returns documents about X's subject matter — none of which necessarily mention X's repeal, because a document about scaffolding safety has no reason to discuss which statute superseded which. Parsing the law reference straight out of the question guarantees the graph lookup happens regardless of what the vector search returned.
 
-- **`technical_documents_text`**: 2,000+ INAIL/EU-OSHA chunked documents
-- **`legal_articles`**: Individual law articles for precise matching
-- **`legal_context`**: Law-level metadata (title, publication date, URN)
+Retrieval runs in five stages: encode the query, parse legal references from its text, search the Qdrant collections, look up validity and abrogation history in Neo4j for every law found on either path, then rerank with a boost or penalty based on legal status.
 
-### 3. Knowledge Graph (Neo4j)
+---
 
-**Node Types:**
-- `CanonicalLaw`: Represents a complete law (e.g., D.Lgs. 81/2008)
-- `Article`: Individual articles within laws
-- `TechnicalDocument`: INAIL/OSHA publications
+## 🗂️ The codebase
 
-**Relationship Types:**
-- `ABROGA`: Law/Article X repeals Law/Article Y
-- `MODIFICA`: Law/Article X amends Article Y  
-- `RICHIAMA`: Law/Article X references Law/Article Y
-- `CITES`: Technical document cites a law/article
+Built and run on an HPC cluster with SLURM. The pipeline is layered, and each layer is a separate job because each one takes hours.
 
-**Example Query:**
+### Acquisition and parsing
+
+| File | Does |
+|---|---|
+| [`inail_hpc_main (1).py`](inail_hpc_main%20\(1\).py) | Scrapes INAIL technical publications |
+| [`osha_scraper_hpc_new.py`](osha_scraper_hpc_new.py) | Scrapes EU-OSHA resources |
+| [`07_legal_normattiva.py`](07_legal_normattiva.py) | Pulls Italian legislation from Normattiva as Akoma Ntoso XML |
+| [`inail_docling (1).py`](inail_docling%20\(1\).py), [`osha_docling (4).py`](osha_docling%20\(4\).py) | Layout-aware PDF parsing with Docling, preserving tables and structure |
+| [`vlm_only_script (3).py`](vlm_only_script%20\(3\).py) | Captions extracted figures with a vision-language model |
+
+### Indexing
+
+| File | Does |
+|---|---|
+| [`00_create_collections.py`](00_create_collections.py) | Creates the four Qdrant collections |
+| [`02_text_chunks_FIXED (1).py`](02_text_chunks_FIXED%20\(1\).py) | Hierarchical chunking with overlap, reading `laws_structured` before falling back to semantic metadata |
+| [`05_images_vlm.py`](05_images_vlm.py) | Indexes figures, filtering out logos, covers and low-information images |
+| [`tf_idf_embedgemma_hpc (1).py`](tf_idf_embedgemma_hpc%20\(1\).py) | Embedding experiments |
+| [`enrichment_inail (1).py`](enrichment_inail%20\(1\).py), [`Enrichment_OSHA.ipynb`](Enrichment_OSHA.ipynb) | Risk categories, professional profiles, keyword extraction |
+
+### Graph construction
+
+Six ordered stages, each aligned on `law_id` as the primary key:
+
+| Stage | File | Does |
+|---|---|---|
+| Schema | [`neo4j_schema_setup.py`](neo4j_schema_setup.py) | Legal ontology, constraints and indexes, with no APOC dependency so it runs on any Neo4j |
+| 0b | [`layer0b_legal_bridge_fixed.py`](layer0b_legal_bridge_fixed.py) | Syncs `laws_structured` out of the document collection, separating real publication dates from placeholders |
+| 1 | [`layer1_qdrant_bridge_FIXED_V2.py`](layer1_qdrant_bridge_FIXED_V2.py) | Builds `CITES` edges, creating missing `Article` nodes on the fly |
+| 1b | [`layer1b_normattiva_sync.py`](layer1b_normattiva_sync.py) | Enriches existing nodes with the official Normattiva metadata |
+| 2 | [`layer2_fixed.py`](layer2_fixed.py) | Extracts `ABROGA` and `MODIFICA` relations — the ones that carry legal status |
+| 3 | [`layer3_v2_aligned.py`](layer3_v2_aligned.py) | Semantic bridge, using the same category taxonomy as the enrichment step |
+
+### Retrieval and generation
+
+| File | Does |
+|---|---|
+| [`hybrid_retriever_v5_fixed.py`](hybrid_retriever_v5_fixed.py) | The five-stage hybrid retriever |
+| [`graphrag_rag_v3.py`](graphrag_rag_v3.py) | Full RAG loop with three prompt modes — legal, practical, general — selected automatically |
+| [`test_retriever.py`](test_retriever.py) | Benchmark queries across fire prevention, asbestos, carcinogens and construction |
+
+### Operations
+
+SLURM jobs ([`slurm_graphrag_full.sbatch`](slurm_graphrag_full.sbatch), [`slurm_stack_qdrant_neo4j.sbatch`](slurm_stack_qdrant_neo4j.sbatch), the scraping jobs), stack control ([`start_stack.sh`](start_stack.sh), [`status_stack.sh`](status_stack.sh), [`tunnel_stack.sh`](tunnel_stack.sh)) and health checks ([`check_connections.py`](check_connections.py), [`verify_neo4j_status.py`](verify_neo4j_status.py), [`check_cites.py`](check_cites.py)).
+
+---
+
+## 🕸️ Graph model
+
+**Nodes** — `CanonicalLaw` (a whole statute), `Article` (an article within one), `TechnicalDocument` (an INAIL or EU-OSHA publication).
+
+**Relations** — `ABROGA` (X repeals Y), `MODIFICA` (X amends Y), `RICHIAMA` (X references Y), `CITES` (a document cites a law or article).
+
 ```cypher
-// Find all laws repealed by D.Lgs. 81/2008
+// Everything repealed by D.Lgs. 81/2008
 MATCH (a:Article {parent_law_id: 'dlgs-81-2008'})-[:ABROGA]->(repealed)
 RETURN a.article_num, repealed.law_id
 ```
 
-### 4. Hybrid Retriever
+Deduplication was the hard part. An early version keyed citations by `law_id`, which collapsed every reference to the same statute into one edge and destroyed article-level precision. The current version keys on `full_citation`, so "Art. 71 comma 4 of D.Lgs. 81/2008" stays distinct from "Art. 26 of D.Lgs. 81/2008". [`reenrich_laws_v3_FINAL.py`](reenrich_laws_v3_FINAL.py) exists to repair graphs built under the old assumption.
 
-The `HybridRetrieverV5` implements a 5-stage pipeline:
+---
 
-1. **Query Encoding**: Embed user query with multilingual-e5-large
-2. **Law Extraction**: Parse legal references from query text (e.g., "D.Lgs. 626/1994" → `dlgs-626-1994`)
-3. **Vector Search**: Retrieve top-k documents from Qdrant collections
-4. **Graph Enrichment**: For each cited law, query Neo4j for:
-   - Current validity (`is_vigente`)
-   - Abrogation relationships
-   - Modification history
-5. **Reranking**: Score adjustment with validity boost/penalty
+## 📊 Data and stack
 
-**Key Innovation:** The retriever extracts laws from *both* retrieved documents *and* the query itself, ensuring questions like "Is Law X valid?" always trigger a graph lookup.
+| Source | Type | Volume |
+|---|---|---|
+| INAIL | Technical publications, risk assessment, guidelines | 800+ documents |
+| EU-OSHA | European safety resources | 200+ documents |
+| Normattiva | Italian legislation, Akoma Ntoso XML | 50+ laws, 3,000+ articles |
 
-### 5. RAG Integration
+| Component | Choice |
+|---|---|
+| Vector store | Qdrant — `technical_documents_text`, `legal_articles`, `legal_context`, `technical_images` |
+| Graph store | Neo4j |
+| Embeddings | `intfloat/multilingual-e5-large`, 1024 dimensions |
+| Generation | Qwen 2.5 72B via Ollama |
+| PDF parsing | Docling |
+| Infrastructure | HPC cluster, NVIDIA A100, SLURM |
 
-- **LLM**: Qwen 2.5 72B via Ollama
-- **Prompt Engineering**: Three specialized modes (Legal, Practical, General) with automatic selection
-- **Context Formatting**: Structured presentation with visual warnings for repealed laws
+---
 
 ## 📈 Results
 
-Evaluated on 14 benchmark queries covering fire prevention, asbestos, carcinogens, and construction safety:
+Evaluated on 14 benchmark queries covering fire prevention, asbestos, carcinogens and construction safety.
 
-| Metric | Vector-Only | Hybrid (Vector + Graph) |
-|--------|-------------|------------------------|
-| Query Time | ~0.1s | ~40s |
-| Repealed Laws Detected | ❌ No | ✅ Yes |
-| Modification Tracking | ❌ No | ✅ Yes |
-| Legal Traceability | Partial | Full |
+| | Vector only | Hybrid (vector + graph) |
+|---|---|---|
+| Query time | ~0.1 s | ~40 s |
+| Repealed laws detected | ✗ | ✓ |
+| Modification tracking | ✗ | ✓ |
+| Legal traceability | Partial | Full |
 
-**Trade-off:** The additional processing time is justified in safety-critical domains where accuracy outweighs speed.
+**Four hundred times slower**, and worth it here. A consultant waiting forty seconds for a correct answer is fine; a consultant citing a repealed statute in a safety assessment is a liability. The trade only makes sense because this is a domain where being wrong is expensive — it would be the wrong call for a search box.
 
-## 🛠️ Tech Stack
+---
 
-| Component | Technology |
-|-----------|------------|
-| Vector Database | Qdrant |
-| Graph Database | Neo4j |
-| Embeddings | intfloat/multilingual-e5-large |
-| LLM | Qwen 2.5 72B (Ollama) |
-| PDF Processing | Docling (IBM) |
-| Language | Python 3.10+ |
-| Infrastructure | HPC cluster (NVIDIA A100) |
+## ⚙️ Running it
 
+```bash
+cp .env.example .env    # fill in HUGGINGFACE_TOKEN and NEO4J_PASSWORD
+set -a && source .env && set +a
+```
 
-## 📊 Data Sources 
+No credentials are stored in the code. The scripts read `HUGGINGFACE_TOKEN` and `NEO4J_PASSWORD` from the environment, and the SLURM jobs refuse to start if `NEO4J_PASSWORD` is unset rather than falling back to a default.
 
-[Codici](https://drive.google.com/drive/folders/19tM4tLhgXn2o-Vbchh5rFToaOQnDDo1x?usp=sharing)
+**What will not run as-is.** Paths point at the cluster where this was built (`/mnt/beegfs/proj/dss.dmaia/...`) and need repointing. The corpora are not redistributed: INAIL and EU-OSHA publications are third-party documents, and the Normattiva XML is bulk-downloaded separately. `inail_docling (1).py`, `osha_docling (4).py` and the enrichment notebook are Colab exports, so they carry `!pip install` lines that are not valid Python outside a notebook.
 
-| Source | Type | Volume |
-|--------|------|--------|
-| **INAIL** | Technical publications (risk assessment, guidelines) | 800+ documents |
-| **EU-OSHA** | European safety resources | 200+ documents |
-| **Normattiva** | Italian legislation (XML format) | 50+ laws, 3,000+ articles |
+**On the multiple versions.** Several components appear more than once — `hybrid_retriever` at v1, v3 and v5, `layer1_qdrant_bridge` as FIXED and FIXED_V2, `layer3` as production and v2_aligned. The later file is the current one in each case. The earlier ones are kept because the fixes between them are the substance of the work: the deduplication key, the query-side law extraction, the alignment of category taxonomies between enrichment and the semantic bridge. This folder is a working thesis codebase rather than a packaged release, and it is being tidied incrementally.
+
+[`Thesis_Presentation.pdf`](Thesis_Presentation.pdf) covers the architecture and results as presented.
+
+---
 
 ## 👤 Author
 
-**Francesco Natali**  
-Master's Degree in Statistical Methods and Applications (Data Analyst)  
-Sapienza University of Rome
-
-*This project was developed as part of my Master's thesis (A.Y. 2024/2025)*
+**Francesco Natali** · MSc in Statistical Methods and Applications, Sapienza University of Rome

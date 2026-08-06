@@ -33,7 +33,7 @@ python mcda.py
 | **Fishbein MAA** | Score the same 8 phones on 9 weighted attributes | [`multi-attribute-attitude-model.xlsx`](multi-attribute-attitude-model.xlsx) |
 | **Topological sorting** | Complete an incomplete preference order over 7 EVs | `DM_preferences_Natali_1945581.docx` |
 | **Bi-objective MOLP** | Knapsack trading safety against value, ε-constraint | `Biobj_1945581.docx`, `MolpNatali (1).pdf` |
-| **Balanced Scorecard** | Strategy maps for a brewery and for urban greening | `BSC_Group_AGATE_NATALI.xlsx`, `BSC_AGATENATALI.docx` |
+| **Balanced Scorecard** | Strategy maps for a brewery and for urban greening | [`balanced_scorecard_brewery.xlsx`](balanced_scorecard_brewery.xlsx), [`balanced_scorecard_urban_greening_analysis.docx`](balanced_scorecard_urban_greening_analysis.docx) |
 
 ---
 
