@@ -17,7 +17,7 @@
 
 ## 📋 Overview
 
-Three projects that take textbook algorithms and measure what they actually do, plus a set of extensions written afterwards to chase down a result the original benchmark could not explain.
+Four projects that take textbook algorithms and measure what they actually do, plus a set of extensions written afterwards to chase down a result the original benchmark could not explain.
 
 The thread running through all of it: **asymptotic complexity tells you the shape of the curve, not where you are on it.** Every project here found a case where the theory-optimal choice lost on the machine.
 
@@ -26,6 +26,7 @@ The thread running through all of it: **asymptotic complexity tells you the shap
 | 1 | [`Algorithm_comparison.ipynb`](Algorithm_comparison.ipynb) | Sorting and traversal, timed and curve-fitted |
 | 2 | [`Algorithm_maps.ipynb`](Algorithm_maps.ipynb) | Shortest paths on OpenStreetMap street networks |
 | 3 | [`Network_Analysis.ipynb`](Network_Analysis.ipynb) | Centrality and community detection on scale-free graphs |
+| 4 | [`cut_hierarchy.py`](cut_hierarchy.py) | Minimum-cut trees, and where a dependency network breaks first |
 | + | [`extensions/`](extensions/) | Bidirectional search and partition validation, written after the fact |
 
 📊 **[`benchmark_dashboard.html`](benchmark_dashboard.html)** — every measurement below, plotted and interactive. Download and open it; it is self-contained, no dependencies.
@@ -120,6 +121,70 @@ The degree distribution follows the expected power law, with hub nodes at degree
 
 ---
 
+## ✂️ Project 4 — Minimum-cut hierarchies
+
+Where does a network break first? Not at its busiest link, but at the cheapest *boundary*: the set of links whose combined capacity is smallest among all the ways of splitting the graph in two.
+
+Answering that for every pair of nodes naively means running a max-flow computation for each of the n(n−1)/2 pairs. **Gomory-Hu cut trees** collapse the whole thing into a weighted tree on n nodes with a remarkable property: the minimum cut between any two nodes equals the lightest edge on the path between them in the tree. Gusfield's procedure builds it in **n−1 max-flow calls**.
+
+```python
+def min_cut_value(tree, u, v):
+    path = nx.shortest_path(tree, u, v)
+    return min(tree[a][b]["weight"] for a, b in zip(path, path[1:]))
+```
+
+### Correctness first
+
+Every cut value the tree reports is checked against an exhaustive pairwise computation:
+
+| Nodes | Pairs verified | Gusfield calls | Mismatches |
+|---:|---:|---:|---:|
+| 10 | 45 | 9 | **0** |
+| 14 | 91 | 13 | **0** |
+| 18 | 153 | 17 | **0** |
+| 22 | 231 | 21 | **0** |
+
+### The cost difference
+
+| Nodes | Gusfield calls | Pairwise calls | Speedup |
+|---:|---:|---:|---:|
+| 8 | 7 | 28 | 4.8× |
+| 16 | 15 | 120 | 9.0× |
+| 24 | 23 | 276 | 13.2× |
+| 28 | 27 | 378 | **17.7×** |
+
+The gap widens with every node added, because one side grows linearly and the other quadratically.
+
+### Application: fragility of a service dependency graph
+
+A microservice architecture is a weighted graph — services as nodes, capacity or traffic on the links. The weakest cuts in that graph are the places where the system partitions most easily: the boundaries a single failure can open.
+
+Run against a sixteen-service topology (gateway, auth, catalog, checkout, payments, inventory, warehouse, shipping and their datastores):
+
+| Cut capacity | Services isolated | What detaches |
+|---:|---:|---|
+| 95 | 1 | `carrier-api` |
+| 240 | 3 | `carrier-api`, `shipping`, `warehouse` |
+| 260 | 2 | `analytics-db`, `reporting` |
+| 300 | 1 | `fraud` |
+| 520 | 2 | `carrier-api`, `shipping` |
+
+Read top down, this is a fragility ranking. The carrier integration hangs off a single thin link and goes first. Next, at capacity 240, the entire fulfilment subsystem — warehouse, shipping and the carrier behind it — separates from the rest of the platform. That is the finding worth acting on: three services that look independent on an architecture diagram share one narrow boundary, so the same failure takes all three.
+
+The same tree also yields a clustering. Cutting its edges from lightest to heaviest splits the system into progressively finer groups, each split labelled with the capacity it costs:
+
+```
+      root: 1 clusters, sizes [16]
+    cut 95: 2 clusters, sizes [15, 1]
+   cut 240: 3 clusters, sizes [13, 2, 1]
+   cut 260: 4 clusters, sizes [11, 2, 2, 1]
+   cut 300: 5 clusters, sizes [10, 2, 2, 1, 1]
+```
+
+No number of clusters has to be chosen in advance. The graph's own cut structure decides where the boundaries are.
+
+---
+
 ## 🔬 Extensions
 
 Written after the course, to settle the A* question and to check the community partitions properly. Both modules run standalone and print their own results.
@@ -197,3 +262,5 @@ Both write their results to CSV next to the source. The notebooks were written i
 - Blondel, V.D., Guillaume, J.-L., Lambiotte, R. & Lefebvre, E. (2008). Fast unfolding of communities in large networks. *J. Stat. Mech.*, P10008.
 - Traag, V.A., Waltman, L. & van Eck, N.J. (2019). From Louvain to Leiden: guaranteeing well-connected communities. *Scientific Reports*, 9, 5233.
 - Barabási, A.-L. & Albert, R. (1999). Emergence of scaling in random networks. *Science*, 286(5439), 509–512.
+- Gomory, R.E. & Hu, T.C. (1961). Multi-terminal network flows. *Journal of the SIAM*, 9(4), 551-570.
+- Gusfield, D. (1990). Very simple methods for all pairs network flow analysis. *SIAM Journal on Computing*, 19(1), 143-155.
