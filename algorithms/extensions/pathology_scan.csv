@@ -1,0 +1,8 @@
+family,graphs,graphs_affected,extra_fragments
+barabasi_albert_2000_2,15,0,0
+barabasi_albert_5000_1,10,0,0
+powerlaw_cluster_2000,10,0,0
+stochastic_block_10x100,10,0,0
+random_geometric_1500,10,0,0
+erdos_renyi_1500,10,0,0
+lfr_1000_mu045,7,0,0
